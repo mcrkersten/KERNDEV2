@@ -394,7 +394,7 @@ Prefab:
         type: 2}
       propertyPath: _audioClip
       value: 
-      objectReference: {fileID: 8300000, guid: f79ffd96afc6a5e4798fec24e9c3f145, type: 3}
+      objectReference: {fileID: 8300000, guid: e41bbcfb00550184eaf5b694615faafc, type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 841bb5553c4fbe34b8b650c441214617, type: 2}
   m_IsPrefabAsset: 0
@@ -431,14 +431,14 @@ MonoBehaviour:
   hasBulge: 0
   orbitRotationStepSize: 0.02
   orbitYNoise: 0
-  minorAxisStep: 0.001
-  mayorAxisStep: 0.0015
+  minorAxisStep: 0.01
+  mayorAxisStep: 0.015
   orbitSpeedDecrease: 0.1
   planetPrefab: {fileID: 1933802669575128, guid: f091bbcb75eb5894289edacc79475fcf,
     type: 2}
   color:
   - {r: 1, g: 0, b: 0, a: 1}
-  - {r: 0.05271268, g: 1, b: 0, a: 1}
+  - {r: 0.03799495, g: 0.745283, b: 0, a: 1}
   - {r: 0, g: 0.055066347, b: 1, a: 1}
   - {r: 1, g: 0, b: 0.72638416, a: 1}
   - {r: 1, g: 0.6740273, b: 0, a: 1}
