@@ -54,6 +54,7 @@ public class GroundSystem : MonoBehaviour {
         Vector3[] newVertices = new Vector3[4];
         newVertices[0] = new Vector3((-xMeshSize/2) - .5f, 0, (-zMeshSize/2) - .5f);
         newVertices[1] = new Vector3((xMeshSize/2) + .5f, 0, (-zMeshSize/2) - .5f);
+
         newVertices[2] = new Vector3((-xMeshSize/2) - .5f, 0, (zMeshSize/2) + .5f);
         newVertices[3] = new Vector3((xMeshSize/2) + .5f, 0, (zMeshSize/2) + .5f);
 

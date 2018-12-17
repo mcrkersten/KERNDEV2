@@ -1,4 +1,4 @@
 sceneSetups:
-- path: Assets/Scenes/City_L-System.unity
+- path: Assets/Scenes/CityOnTexture.unity
   isLoaded: 1
   isActive: 1

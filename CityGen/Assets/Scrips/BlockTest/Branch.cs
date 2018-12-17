@@ -22,7 +22,6 @@ public class Branch : MonoBehaviour {
     }
 
     private void MakeRoad() {
-        List<GameObject> tempRoad = new List<GameObject>();
 
         int roadSize = Random.Range(5, (maxRoadLength + 1));
         direction = Random.Range(1, 5);
