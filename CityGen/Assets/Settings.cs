@@ -27,8 +27,9 @@ public class Settings : MonoBehaviour {
 
     [Header("Highway Setings")]
     public int angles;
-    public int rays;
+    
     public float laserDistance;
+    public bool canBranch;
     public bool followPopulationMap;
     public bool followWaterMap;
     public bool followWaterBody;
@@ -38,4 +39,10 @@ public class Settings : MonoBehaviour {
     public int branchProbability;
     public int branchAngle;
     public int minimalBranchDistance;
+    public int maxHighways;
+    [HideInInspector]
+    public int currentHighways;
+
+    [Header("V1 setting")]
+    public int rays;
 }
