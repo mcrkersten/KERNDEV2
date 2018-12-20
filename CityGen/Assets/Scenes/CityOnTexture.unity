@@ -275,60 +275,6 @@ MeshFilter:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 182750624}
   m_Mesh: {fileID: 0}
---- !u!1 &575652752
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 575652754}
-  - component: {fileID: 575652753}
-  m_Layer: 0
-  m_Name: Settings
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &575652753
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 575652752}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ca3d8e86f89843f4c81a34101566181f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  populationMap: {fileID: 2800000, guid: 66eaa755e96349b429d08a858b213fce, type: 3}
-  waterMap: {fileID: 2800000, guid: c3ddf68b87d189a4ab487bfa41f7b9b8, type: 3}
-  angles: 20
-  laserDistance: 30
-  canBranch: 1
-  followPopulationMap: 1
-  followWaterMap: 1
-  followWaterBody: 0
-  branchProbability: 36
-  branchAngle: 90
-  minimalBranchDistance: 5
-  maxHighways: 4
-  currentHighways: 0
-  rays: 30
---- !u!4 &575652754
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 575652752}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 4
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1099002634
 GameObject:
   m_ObjectHideFlags: 0
@@ -395,6 +341,64 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: -90, y: 0, z: 0}
+--- !u!1 &1150171702
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1150171704}
+  - component: {fileID: 1150171703}
+  m_Layer: 0
+  m_Name: Setings
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1150171703
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1150171702}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4585296819679e845ba57d93a80b911e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  populationMap: {fileID: 2800000, guid: 66eaa755e96349b429d08a858b213fce, type: 3}
+  waterMap: {fileID: 2800000, guid: 6ec4a74572a74bd49866294654700b5f, type: 3}
+  angles: 15
+  roadLength: 100
+  laserDistance: 25
+  canBranch: 1
+  roadColor: {r: 1, g: 0.88366365, b: 0, a: 1}
+  followPopulationMap: 0
+  followWaterMap: 0
+  followWaterBody: 0
+  branchProbability: 67
+  branchAngle: 90
+  minimalBranchDistance: 10
+  maxHighways: 7
+  currentHighways: 0
+  xPos: 
+  zPos: 
+  rays: 0
+--- !u!4 &1150171704
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1150171702}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1209156582
 Prefab:
   m_ObjectHideFlags: 0
@@ -404,7 +408,7 @@ Prefab:
     m_Modifications:
     - target: {fileID: 4139983383993292, guid: 2a8d81ccf9a8d39418642ec5e7b63d10, type: 2}
       propertyPath: m_LocalPosition.x
-      value: 448
+      value: 569
       objectReference: {fileID: 0}
     - target: {fileID: 4139983383993292, guid: 2a8d81ccf9a8d39418642ec5e7b63d10, type: 2}
       propertyPath: m_LocalPosition.y
@@ -412,7 +416,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4139983383993292, guid: 2a8d81ccf9a8d39418642ec5e7b63d10, type: 2}
       propertyPath: m_LocalPosition.z
-      value: 552
+      value: 614
       objectReference: {fileID: 0}
     - target: {fileID: 4139983383993292, guid: 2a8d81ccf9a8d39418642ec5e7b63d10, type: 2}
       propertyPath: m_LocalRotation.x
@@ -432,11 +436,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4139983383993292, guid: 2a8d81ccf9a8d39418642ec5e7b63d10, type: 2}
       propertyPath: m_RootOrder
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 1408644390065298, guid: 2a8d81ccf9a8d39418642ec5e7b63d10, type: 2}
-      propertyPath: m_Name
-      value: HighwayGeneratorV02
+      value: 4
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2a8d81ccf9a8d39418642ec5e7b63d10, type: 2}
@@ -450,7 +450,7 @@ Prefab:
     m_Modifications:
     - target: {fileID: 4139983383993292, guid: 2a8d81ccf9a8d39418642ec5e7b63d10, type: 2}
       propertyPath: m_LocalPosition.x
-      value: 448
+      value: 569
       objectReference: {fileID: 0}
     - target: {fileID: 4139983383993292, guid: 2a8d81ccf9a8d39418642ec5e7b63d10, type: 2}
       propertyPath: m_LocalPosition.y
@@ -458,7 +458,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4139983383993292, guid: 2a8d81ccf9a8d39418642ec5e7b63d10, type: 2}
       propertyPath: m_LocalPosition.z
-      value: 552
+      value: 614
       objectReference: {fileID: 0}
     - target: {fileID: 4139983383993292, guid: 2a8d81ccf9a8d39418642ec5e7b63d10, type: 2}
       propertyPath: m_LocalRotation.x

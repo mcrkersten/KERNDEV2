@@ -5,15 +5,18 @@ using UnityEngine;
 namespace V02 {
     public class HighwayGeneratorV02 : MonoBehaviour {
 
-        private Settings settings;
+        private SettingsObject settings;
 
         [Header("Highway Branch object")]
         public GameObject BranchPrfab;
+        public Material Mat;
+        private Color roadColor;
         private int branchDistance;
         private bool canBranch;
         private int minBranchDistance;
         private int branchProb;
-
+        private int maxLenght;
+        private int curLenght = 0;
 
         //private Transform approvedPossition;
         private GameObject laserPos;
@@ -39,7 +42,7 @@ namespace V02 {
         }
 
         void InitSettings() {
-            settings = Settings.Instance;
+            settings = SettingsObject.Instance;
             angle = settings.angles;
             laserDistance = settings.laserDistance;
             populationMap = settings.populationMap;
@@ -47,6 +50,8 @@ namespace V02 {
             canBranch = settings.canBranch;
             minBranchDistance = settings.minimalBranchDistance;
             branchProb = settings.branchProbability;
+            maxLenght = settings.roadLength;
+            roadColor = settings.roadColor;
         }
 
         void InitLineRenderer() {
@@ -73,8 +78,11 @@ namespace V02 {
         }
 
         void BuildFreeway() {
-            GetBestPosition(); //<- Calls Constraints and BuildRoad();
-            DrawNewRoad();
+            if(curLenght < maxLenght) {
+                curLenght++;
+                GetBestPosition(); //<- Calls Constraints and BuildRoad();
+                DrawNewRoad();
+            }
         }
 
         //Get the best position for a new roadsegment.
@@ -96,7 +104,6 @@ namespace V02 {
 
             Vector3 bestOnPopMap = PopulationConstraints(x, z, y);
             bool waterConstraints = WaterConstraints(Mathf.RoundToInt(bestOnPopMap.z), Mathf.RoundToInt(bestOnPopMap.x));
-
             BuildRoad(waterConstraints, bestOnPopMap);
         }
 
@@ -129,6 +136,9 @@ namespace V02 {
             //Line renderer
             newLine.transform.position = this.transform.position;
             LineRenderer nlr = newLine.AddComponent<LineRenderer>();
+            nlr.material = Mat;
+            nlr.startColor = roadColor;
+            nlr.endColor = roadColor;
             nlr.positionCount = 2;
             nlr.SetPosition(0, this.transform.position);
             nlr.SetPosition(1, debugPos);
@@ -139,6 +149,10 @@ namespace V02 {
 
         void BuildRoad(bool noWater, Vector3 position) {
             if (noWater == true) {
+
+                settings.xPos.Add(Mathf.RoundToInt(position.x));
+                settings.zPos.Add(Mathf.RoundToInt(position.z));
+
                 this.transform.position = new Vector3(position.x, 0, position.z);
                 this.transform.eulerAngles = new Vector3(0, position.y, 0);
                 //Reset Debug LineRenderer
@@ -164,9 +178,25 @@ namespace V02 {
 
         public void InitBranch(Vector3 rot, Vector3 pos) {
             Start();
-            float t = Random.Range(0 - settings.branchAngle, 0 + settings.branchAngle);
             this.transform.position = pos;
-            this.transform.eulerAngles = new Vector3(rot.x, rot.y + t, rot.z);
+
+            List<int> x = new List<int>(); //Position
+            List<int> z = new List<int>(); //Position
+            List<float> y = new List<float>(); //Rotation
+
+            this.transform.eulerAngles = new Vector3(rot.x, rot.y + settings.branchAngle, rot.z);
+            x.Add(Mathf.RoundToInt(laserPos.transform.position.x));
+            z.Add(Mathf.RoundToInt(laserPos.transform.position.z));
+            y.Add(rot.y + settings.branchAngle);
+
+            this.transform.eulerAngles = new Vector3(rot.x, rot.y - settings.branchAngle, rot.z);
+            x.Add(Mathf.RoundToInt(laserPos.transform.position.x));
+            z.Add(Mathf.RoundToInt(laserPos.transform.position.z));
+            y.Add(rot.y - settings.branchAngle);
+
+            Vector3 bestOnPopMap = PopulationConstraints(x, z, y);
+            bool waterConstraints = WaterConstraints(Mathf.RoundToInt(bestOnPopMap.z), Mathf.RoundToInt(bestOnPopMap.x));
+            this.transform.eulerAngles = new Vector3(rot.x,bestOnPopMap.y, rot.z);
         }
     }
 }

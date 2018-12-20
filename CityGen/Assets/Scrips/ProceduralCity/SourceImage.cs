@@ -15,7 +15,7 @@ public class SourceImage : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-        image = Settings.Instance.populationMap;
+        image = SettingsObject.Instance.populationMap;
         rd = GetComponent<Renderer>();
         meshFilter = GetComponent<MeshFilter>();
         GeneratePlane();

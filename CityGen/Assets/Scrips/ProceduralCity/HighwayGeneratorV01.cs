@@ -5,7 +5,7 @@ using UnityEngine;
 namespace v01 {
     public class HighwayGeneratorV01 : MonoBehaviour {
 
-        private Settings settings;
+        private SettingsObject settings;
 
         [Header("Highway Branch object")]
         public GameObject BranchPrfab;
@@ -36,7 +36,7 @@ namespace v01 {
 
         // Use this for initialization
         void Awake() {
-            settings = Settings.Instance;
+            settings = SettingsObject.Instance;
             angle = settings.angles;
             rays = settings.rays;
             laserDistance = settings.rays;
