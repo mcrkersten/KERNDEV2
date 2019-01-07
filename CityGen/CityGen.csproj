@@ -362,6 +362,7 @@
     <Compile Include="Assets\Scrips\ProceduralCity\HighwayGeneratorV01.cs" />
     <Compile Include="Assets\Scrips\ProceduralCity\HighwayGeneratorV02.cs" />
     <Compile Include="Assets\Scrips\ProceduralCity\SourceImage.cs" />
+    <Compile Include="Assets\Scrips\ProceduralCity\StreetGeneratorV01.cs" />
     <Compile Include="Assets\Scrips\SettingsObject.cs" />
     <Compile Include="Assets\StarSystem\AudioPeer\AudioPeer.cs" />
     <Compile Include="Assets\StarSystem\CamDrag.cs" />

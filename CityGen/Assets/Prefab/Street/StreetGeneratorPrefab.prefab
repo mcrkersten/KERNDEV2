@@ -20,9 +20,9 @@ GameObject:
   m_Component:
   - component: {fileID: 4139983383993292}
   - component: {fileID: 120914950373522088}
-  - component: {fileID: 114636187040349070}
+  - component: {fileID: 114236778819135352}
   m_Layer: 0
-  m_Name: HighwayGeneratorV02
+  m_Name: StreetGeneratorPrefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -41,7 +41,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: -45, z: 0}
---- !u!114 &114636187040349070
+--- !u!114 &114236778819135352
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
@@ -49,10 +49,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1408644390065298}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: be3a5d66b3b095648ad6ad91fda5d935, type: 3}
+  m_Script: {fileID: 11500000, guid: 95ab19786c391404cab4ea8fea2fe848, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  BranchPrfab: {fileID: 1408644390065298}
+  BranchPrfab: {fileID: 1408644390065298, guid: bc52547c764830642bdf9bbd842afcf2,
+    type: 2}
   Mat: {fileID: 10306, guid: 0000000000000000f000000000000000, type: 0}
   lr: {fileID: 120914950373522088}
 --- !u!120 &120914950373522088

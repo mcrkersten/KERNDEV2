@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.0039957035, g: 0.00021792634, b: 0.000000051515347,
+  m_IndirectSpecularColor: {r: 0.0039957035, g: 0.00021792635, b: 0.000000051515347,
     a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
@@ -184,8 +184,8 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 45798088}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: -10}
+  m_LocalRotation: {x: -0.7071068, y: 0.000000007450581, z: 0.0000000018626451, w: -0.7071068}
+  m_LocalPosition: {x: 495.7454, y: 913.8186, z: 530.77356}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -370,22 +370,35 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   populationMap: {fileID: 2800000, guid: 66eaa755e96349b429d08a858b213fce, type: 3}
   waterMap: {fileID: 2800000, guid: 6ec4a74572a74bd49866294654700b5f, type: 3}
-  angles: 15
-  roadLength: 100
-  laserDistance: 25
+  H_angle: 15
+  H_roadLength: 100
+  H_laserDistance: 15
   canBranch: 1
-  roadColor: {r: 1, g: 0.88366365, b: 0, a: 1}
-  followPopulationMap: 0
-  followWaterMap: 0
-  followWaterBody: 0
-  branchProbability: 67
-  branchAngle: 90
-  minimalBranchDistance: 10
-  maxHighways: 7
+  H_roadColor: {r: 1, g: 0.7202713, b: 0, a: 1}
+  followPopulationMap: 1
+  followWaterMap: 1
+  followWaterBody: 1
+  H_branchProbability: 79
+  H_branchAngle: 90
+  H_minimalBranchDistance: 10
+  maxHighways: 5
   currentHighways: 0
-  xPos: 
-  zPos: 
+  occupiedXY: []
+  proposedXY: []
+  existingCrossing: []
+  existingCrossingYrot: []
   rays: 0
+  R_angle: 1
+  R_minAngle: 85
+  R_maxAngle: 95
+  R_minPopulation: 0.3
+  R_laserDistance: 2
+  R_minimalBranchDistance: 2
+  R_branchProbability: 62
+  R_roadColor: {r: 1, g: 0.91944766, b: 0, a: 1}
+  roads: []
+  newRoads: []
+  removeRoads: []
 --- !u!4 &1150171704
 Transform:
   m_ObjectHideFlags: 0
@@ -408,7 +421,7 @@ Prefab:
     m_Modifications:
     - target: {fileID: 4139983383993292, guid: 2a8d81ccf9a8d39418642ec5e7b63d10, type: 2}
       propertyPath: m_LocalPosition.x
-      value: 569
+      value: 688.2
       objectReference: {fileID: 0}
     - target: {fileID: 4139983383993292, guid: 2a8d81ccf9a8d39418642ec5e7b63d10, type: 2}
       propertyPath: m_LocalPosition.y
@@ -416,7 +429,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4139983383993292, guid: 2a8d81ccf9a8d39418642ec5e7b63d10, type: 2}
       propertyPath: m_LocalPosition.z
-      value: 614
+      value: 620.4
       objectReference: {fileID: 0}
     - target: {fileID: 4139983383993292, guid: 2a8d81ccf9a8d39418642ec5e7b63d10, type: 2}
       propertyPath: m_LocalRotation.x
@@ -450,7 +463,7 @@ Prefab:
     m_Modifications:
     - target: {fileID: 4139983383993292, guid: 2a8d81ccf9a8d39418642ec5e7b63d10, type: 2}
       propertyPath: m_LocalPosition.x
-      value: 569
+      value: 688.2
       objectReference: {fileID: 0}
     - target: {fileID: 4139983383993292, guid: 2a8d81ccf9a8d39418642ec5e7b63d10, type: 2}
       propertyPath: m_LocalPosition.y
@@ -458,7 +471,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4139983383993292, guid: 2a8d81ccf9a8d39418642ec5e7b63d10, type: 2}
       propertyPath: m_LocalPosition.z
-      value: 614
+      value: 620.4
       objectReference: {fileID: 0}
     - target: {fileID: 4139983383993292, guid: 2a8d81ccf9a8d39418642ec5e7b63d10, type: 2}
       propertyPath: m_LocalRotation.x

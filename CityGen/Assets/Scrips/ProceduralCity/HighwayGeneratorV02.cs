@@ -9,6 +9,7 @@ namespace V02 {
 
         [Header("Highway Branch object")]
         public GameObject BranchPrfab;
+        public GameObject roadBranch;
         public Material Mat;
         private Color roadColor;
         private int branchDistance;
@@ -18,7 +19,6 @@ namespace V02 {
         private int maxLenght;
         private int curLenght = 0;
 
-        //private Transform approvedPossition;
         private GameObject laserPos;
 
         //Settings
@@ -41,19 +41,21 @@ namespace V02 {
             settings.currentHighways++;
         }
 
+        //Get all settings from settingsObject
         void InitSettings() {
             settings = SettingsObject.Instance;
-            angle = settings.angles;
-            laserDistance = settings.laserDistance;
+            angle = settings.H_angle;
+            laserDistance = settings.H_laserDistance;
             populationMap = settings.populationMap;
             waterMap = settings.waterMap;
             canBranch = settings.canBranch;
-            minBranchDistance = settings.minimalBranchDistance;
-            branchProb = settings.branchProbability;
-            maxLenght = settings.roadLength;
-            roadColor = settings.roadColor;
+            minBranchDistance = settings.H_minimalBranchDistance;
+            branchProb = settings.H_branchProbability;
+            maxLenght = settings.H_roadLength;
+            roadColor = settings.H_roadColor;
         }
 
+        //Instantiate LineRenderer
         void InitLineRenderer() {
             //Debug linerenderer
             lr = this.GetComponent<LineRenderer>();
@@ -62,8 +64,9 @@ namespace V02 {
             lr.SetPosition(1, laserPos.transform.position);
         }
 
+        //Create Laser
         void InitLaserPosition() {
-            laserPos = new GameObject("laser");
+            laserPos = new GameObject("laserHighway");
             laserPos.transform.parent = this.transform;
             laserPos.transform.localPosition = new Vector3(laserDistance, 0, 0);
             laserPos.transform.rotation = this.transform.rotation;
@@ -72,11 +75,13 @@ namespace V02 {
         private void Update() {
             if (Input.anyKey) {
                 if (this.transform.position.x > 0 && this.transform.position.x < settings.populationMap.width && this.transform.position.z > 0 && this.transform.position.z < settings.populationMap.height) {
+                    NewStreet();
                     BuildFreeway();
                 }
             }
         }
 
+        //Start loop for highway creation
         void BuildFreeway() {
             if(curLenght < maxLenght) {
                 curLenght++;
@@ -107,6 +112,7 @@ namespace V02 {
             BuildRoad(waterConstraints, bestOnPopMap);
         }
 
+        //Test on populationMap
         Vector3 PopulationConstraints(List<int> x, List<int> z, List<float> y) {
             float heighest = 1;
             Vector3 heighestPopPos = new Vector3();
@@ -120,6 +126,7 @@ namespace V02 {
             return heighestPopPos;
         }
 
+        //Test on waterMap and return result
         bool WaterConstraints(int x, int z) {
             float waterAmount = waterMap.GetPixel(x, z).grayscale;
             if(waterAmount < .5) {
@@ -142,16 +149,27 @@ namespace V02 {
             nlr.positionCount = 2;
             nlr.SetPosition(0, this.transform.position);
             nlr.SetPosition(1, debugPos);
-            nlr.startWidth = 10;
-            nlr.endWidth = 10;
+            nlr.startWidth = 5;
+            nlr.endWidth = 5;
+            nlr.sortingOrder = 1;
             debugPos = this.transform.position;
+            newLine.transform.parent = settings.transform;
         }
 
+        //Place new point if all tests are correct or disable this object
         void BuildRoad(bool noWater, Vector3 position) {
             if (noWater == true) {
+                Vector2 p = RoadCrossing(position);
+                if (p != new Vector2(0, 0)) {
+                    this.transform.position = new Vector3(p.x, 0, p.y);
+                    this.transform.eulerAngles = new Vector3(0, 0, 0);
+                    DestroyHighwayGenerator();
+                }
 
-                settings.xPos.Add(Mathf.RoundToInt(position.x));
-                settings.zPos.Add(Mathf.RoundToInt(position.z));
+
+
+                //Set new occupied position
+                settings.occupiedXY.Add(new Vector2(Mathf.RoundToInt(position.x), Mathf.RoundToInt(position.z)));
 
                 this.transform.position = new Vector3(position.x, 0, position.z);
                 this.transform.eulerAngles = new Vector3(0, position.y, 0);
@@ -172,10 +190,25 @@ namespace V02 {
                 }
             }
             else {
-                Destroy(this.gameObject);
+                DestroyHighwayGenerator();
             }
         }
 
+        //Check for roadcrossings and handle them
+        Vector2 RoadCrossing(Vector3 position) {
+            if(curLenght > 3) {
+                foreach (Vector2 x in settings.occupiedXY) {
+                    if (position.x < x.x + (laserDistance/3) && position.x > x.x - (laserDistance/3)) {
+                        if (position.z < x.y + (laserDistance / 3) && position.z > x.y - (laserDistance / 3)) {
+                            return x;
+                        }
+                    }
+                }
+            }
+            return new Vector2(0,0);
+        }
+
+        //Create new highway
         public void InitBranch(Vector3 rot, Vector3 pos) {
             Start();
             this.transform.position = pos;
@@ -184,19 +217,44 @@ namespace V02 {
             List<int> z = new List<int>(); //Position
             List<float> y = new List<float>(); //Rotation
 
-            this.transform.eulerAngles = new Vector3(rot.x, rot.y + settings.branchAngle, rot.z);
+            this.transform.eulerAngles = new Vector3(rot.x, rot.y + settings.H_branchAngle, rot.z);
             x.Add(Mathf.RoundToInt(laserPos.transform.position.x));
             z.Add(Mathf.RoundToInt(laserPos.transform.position.z));
-            y.Add(rot.y + settings.branchAngle);
+            y.Add(rot.y + settings.H_branchAngle);
 
-            this.transform.eulerAngles = new Vector3(rot.x, rot.y - settings.branchAngle, rot.z);
+            this.transform.eulerAngles = new Vector3(rot.x, rot.y - settings.H_branchAngle, rot.z);
             x.Add(Mathf.RoundToInt(laserPos.transform.position.x));
             z.Add(Mathf.RoundToInt(laserPos.transform.position.z));
-            y.Add(rot.y - settings.branchAngle);
+            y.Add(rot.y - settings.H_branchAngle);
 
             Vector3 bestOnPopMap = PopulationConstraints(x, z, y);
             bool waterConstraints = WaterConstraints(Mathf.RoundToInt(bestOnPopMap.z), Mathf.RoundToInt(bestOnPopMap.x));
             this.transform.eulerAngles = new Vector3(rot.x,bestOnPopMap.y, rot.z);
+        }
+
+        //Create new street
+        public void NewStreet() {
+            Vector3 x = this.transform.eulerAngles;
+
+            //Kijk naar +~90 graden
+            float rot = Random.Range(settings.R_minAngle, settings.R_maxAngle);
+            this.transform.Rotate(new Vector3(0,rot,0));
+            if(populationMap.GetPixel(Mathf.RoundToInt(laserPos.transform.position.x), Mathf.RoundToInt(laserPos.transform.position.z)).grayscale < settings.R_minPopulation) {
+                Instantiate(roadBranch, this.transform.position, this.transform.rotation, null);
+            }
+            this.transform.eulerAngles = x;
+
+            //Kijk naar -~90 graden
+            this.transform.Rotate(new Vector3(0, -rot, 0));
+            if (populationMap.GetPixel(Mathf.RoundToInt(laserPos.transform.position.x), Mathf.RoundToInt(laserPos.transform.position.z)).grayscale < settings.R_minPopulation) {
+                Instantiate(roadBranch, this.transform.position, this.transform.rotation, null);
+            }
+            this.transform.eulerAngles = x;
+        }
+
+        //Detroy object
+        void DestroyHighwayGenerator() {
+            Destroy(this.gameObject);
         }
     }
 }
