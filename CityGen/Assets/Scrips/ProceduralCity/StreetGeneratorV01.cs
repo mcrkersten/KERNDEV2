@@ -1,10 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 namespace V02 {
     public class StreetGeneratorV01 : MonoBehaviour {
-
         private SettingsObject settings;
 
         public GameObject BranchPrfab;
@@ -18,6 +18,7 @@ namespace V02 {
         private int angle;
         private float minimalPopulation;
         public int id;
+        private int generatedStreets;
 
         private GameObject laserPos;
 
@@ -44,7 +45,6 @@ namespace V02 {
             settings = SettingsObject.Instance;
             settings.newRoads.Add(this.gameObject);
             waterMap = settings.waterMap;
-            canBranch = settings.canBranch;
             angle = settings.R_angle;
             minAngle = settings.R_minAngle;
             maxAngle = settings.R_maxAngle;
@@ -133,16 +133,24 @@ namespace V02 {
 
         //Place new point if all tests are correct or disable this object
         void BuildRoad(bool noWater, Vector3 position) {
-            if (noWater == true) {
+            if (noWater == true && generatedStreets < settings.maxGeneratedStreets) {
+                generatedStreets++;
                 Vector2 p = RoadCrossing(position);
+
+                //If p is not 0,0, that means a crossing has been found or created on this point (Kills RoadGenerator)
                 if (p != new Vector2(0, 0)) {
                     this.transform.position = new Vector3(p.x, 0, p.y);
                     this.transform.eulerAngles = new Vector3(0, 0, 0);
                     DestroyRoadGenerator();
                     return;
                 }
-                //Set new occupied position
-                settings.occupiedXY.Add(new Vector2(Mathf.RoundToInt(position.x), Mathf.RoundToInt(position.z)));
+                //Set new occupied position in a Quad
+                foreach (Quad quad in settings.quads) {
+                    if (position.x < quad.quadPosition.x && position.z < quad.quadPosition.y) {
+                        quad.occupied.Add(new Vector2(Mathf.RoundToInt(position.x), Mathf.RoundToInt(position.z)));
+                        break; //stay in own Quad
+                    }
+                }
 
                 this.transform.position = new Vector3(position.x, 0, position.z);
                 this.transform.eulerAngles = new Vector3(0, position.y, 0);
@@ -151,7 +159,6 @@ namespace V02 {
                 lr.SetPosition(1, laserPos.transform.position);
 
                 if (branchDistance > minBranchDistance) {
-
                     int spawnNumber = Random.Range(0, 100 + 1);
                     if (branchDistance > minBranchDistance && spawnNumber < branchProb) {
                         NewStreet();
@@ -164,25 +171,50 @@ namespace V02 {
                 return;
             }
         }
-
         //Check for roadcrossings and handle them
         Vector2 RoadCrossing(Vector3 position) {
-            if (curLenght >= 1) {
-                foreach (Vector2 x in settings.occupiedXY) {
-                    if (position.x < x.x + (laserDistance / 1.25) && position.x > x.x - (laserDistance / 1.25)) {
-                        if (position.z < x.y + (laserDistance / 1.25) && position.z > x.y - (laserDistance / 1.25)) {
-                            if (!settings.existingCrossing.Contains(x)) {
-                                print("Crossing");
-                                settings.existingCrossing.Add(x);
-                                settings.existingCrossingYrot.Add(this.transform.eulerAngles.y);
+            List<Vector2> possibleCrossings = new List<Vector2>();
 
+            if (curLenght >= 1) {
+                //Check what quad you are in.
+                foreach(Quad quad in settings.quads) {
+                    if(position.x < quad.quadPosition.x && position.z < quad.quadPosition.y) {
+
+                        //If quad is found, loop through all occupied possitions
+                        foreach (Vector2 x in quad.occupied) {
+
+                            //if there is a occupied possition found within range of our current position of X and Z
+                            if (position.x < x.x + (laserDistance / 1.25) && position.x > x.x - (laserDistance / 1.25)) {
+                                if (position.z < x.y + (laserDistance / 1.25) && position.z > x.y - (laserDistance / 1.25)) {
+                                    possibleCrossings.Add(x);
+                                }
                             }
-                            return x;
                         }
-                    }
+                        if (possibleCrossings.Count >= 1) {
+                            return ClosestPoint(possibleCrossings, position);
+                        }
+                    }         
                 }
             }
             return new Vector2(0, 0);
+        }
+
+        public Vector2 ClosestPoint(List<Vector2> positions, Vector2 curPos) {
+            List<float> dist = new List<float>();
+            foreach(Vector2 singlePos in positions) {
+                dist.Add(Vector2.Distance(singlePos, curPos));
+            }
+            int index = dist.IndexOf(dist.Min());
+            print(index);
+
+            //if it is a new road crossing (No roads have crossed this roadsection)
+            //Remember this crossing(Debug)
+            if (!settings.existingCrossing.Contains(positions[index])) {
+                print("Crossing");
+                settings.existingCrossing.Add(positions[index]);
+                settings.existingCrossingYrot.Add(this.transform.eulerAngles.y);
+            }
+            return positions[index];
         }
 
         public void NewStreet() {
@@ -227,13 +259,14 @@ namespace V02 {
             newLine.transform.position = this.transform.position;
             LineRenderer nlr = newLine.AddComponent<LineRenderer>();
             nlr.material = Mat;
-            nlr.startColor = roadColor;
+            Mat.color = roadColor;
             nlr.endColor = roadColor;
             nlr.positionCount = 2;
             nlr.SetPosition(0, this.transform.position);
             nlr.SetPosition(1, debugPos);
             nlr.startWidth = 1;
             nlr.endWidth = 1;
+            nlr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
             debugPos = this.transform.position;
 
             newLine.transform.parent = settings.transform;

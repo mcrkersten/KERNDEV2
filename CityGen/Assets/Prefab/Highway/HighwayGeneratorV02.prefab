@@ -34,8 +34,8 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1408644390065298}
-  m_LocalRotation: {x: 0, y: -0.38268343, z: 0, w: 0.92387956}
-  m_LocalPosition: {x: 569, y: 0, z: 614}
+  m_LocalRotation: {x: 0, y: 0.92387956, z: 0, w: 0.38268343}
+  m_LocalPosition: {x: 531, y: 0, z: 620.4}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -54,8 +54,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   BranchPrfab: {fileID: 1408644390065298, guid: 490c32fb50a1cd04ab3017448a8e3ec2,
     type: 2}
-  roadBranch: {fileID: 1408644390065298, guid: bc52547c764830642bdf9bbd842afcf2, type: 2}
-  Mat: {fileID: 10306, guid: 0000000000000000f000000000000000, type: 0}
+  mainRoadBranchPrefab: {fileID: 1102212971841738, guid: 67662986b9674cb48863407b6c104785,
+    type: 2}
+  Mat: {fileID: 2100000, guid: cd214adaa48b8ba41a8fd5b88c41c5e0, type: 2}
   lr: {fileID: 120914950373522088}
 --- !u!120 &120914950373522088
 LineRenderer:
@@ -72,7 +73,7 @@ LineRenderer:
   m_ReflectionProbeUsage: 0
   m_RenderingLayerMask: 4294967295
   m_Materials:
-  - {fileID: 0}
+  - {fileID: 2100000, guid: c8c95aff6495e614fa4153d4774b062d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

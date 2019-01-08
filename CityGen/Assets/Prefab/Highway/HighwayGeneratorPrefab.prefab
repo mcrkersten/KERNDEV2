@@ -54,8 +54,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   BranchPrfab: {fileID: 1408644390065298, guid: 2a8d81ccf9a8d39418642ec5e7b63d10,
     type: 2}
-  roadBranch: {fileID: 1408644390065298, guid: bc52547c764830642bdf9bbd842afcf2, type: 2}
-  Mat: {fileID: 10306, guid: 0000000000000000f000000000000000, type: 0}
+  mainRoadBranchPrefab: {fileID: 1102212971841738, guid: e037b83915cc1344f9907078aa561cbc,
+    type: 2}
+  Mat: {fileID: 2100000, guid: cd214adaa48b8ba41a8fd5b88c41c5e0, type: 2}
   lr: {fileID: 120914950373522088}
 --- !u!120 &120914950373522088
 LineRenderer:
@@ -72,7 +73,7 @@ LineRenderer:
   m_ReflectionProbeUsage: 0
   m_RenderingLayerMask: 4294967295
   m_Materials:
-  - {fileID: 0}
+  - {fileID: 2100000, guid: c8c95aff6495e614fa4153d4774b062d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

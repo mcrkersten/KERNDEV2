@@ -54,7 +54,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   BranchPrfab: {fileID: 1408644390065298, guid: 40a0a1f0c182e7d43be902faeadd2e84,
     type: 2}
-  Mat: {fileID: 10306, guid: 0000000000000000f000000000000000, type: 0}
+  Mat: {fileID: 2100000, guid: c5e89453a1546d74aac59012f78137e3, type: 2}
+  id: 0
   lr: {fileID: 120914950373522088}
 --- !u!120 &120914950373522088
 LineRenderer:
@@ -71,7 +72,7 @@ LineRenderer:
   m_ReflectionProbeUsage: 0
   m_RenderingLayerMask: 4294967295
   m_Materials:
-  - {fileID: 0}
+  - {fileID: 2100000, guid: c8c95aff6495e614fa4153d4774b062d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

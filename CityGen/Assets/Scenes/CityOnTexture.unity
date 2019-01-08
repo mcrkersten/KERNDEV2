@@ -38,8 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.0039957035, g: 0.00021792635, b: 0.000000051515347,
-    a: 1}
+  m_IndirectSpecularColor: {r: 0.37311953, g: 0.38074014, b: 0.3587274, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -124,6 +123,7 @@ GameObject:
   - component: {fileID: 45798091}
   - component: {fileID: 45798090}
   - component: {fileID: 45798089}
+  - component: {fileID: 45798092}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -146,8 +146,8 @@ Camera:
   m_GameObject: {fileID: 45798088}
   m_Enabled: 1
   serializedVersion: 2
-  m_ClearFlags: 1
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_ClearFlags: 2
+  m_BackGroundColor: {r: 0, g: 0, b: 0, a: 0}
   m_projectionMatrixMode: 1
   m_SensorSize: {x: 36, y: 24}
   m_LensShift: {x: 0, y: 0}
@@ -184,13 +184,25 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 45798088}
-  m_LocalRotation: {x: -0.7071068, y: 0.000000007450581, z: 0.0000000018626451, w: -0.7071068}
-  m_LocalPosition: {x: 495.7454, y: 913.8186, z: 530.77356}
+  m_LocalRotation: {x: 0.7071068, y: 0.00000008940697, z: -0.000000029802322, w: 0.7071067}
+  m_LocalPosition: {x: 500, y: 920, z: 500}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &45798092
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 45798088}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ff26db721962cdf4a8edcdfa9a767d2a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  profile: {fileID: 11400000, guid: 2c4c43be94a0b9f4cb5a4b01293e6767, type: 2}
 --- !u!1 &182750624
 GameObject:
   m_ObjectHideFlags: 0
@@ -208,7 +220,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &182750625
 Transform:
   m_ObjectHideFlags: 0
@@ -334,13 +346,13 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1099002634}
-  m_LocalRotation: {x: -0.7071068, y: 0, z: 0, w: 0.7071068}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 3, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: -90, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1150171702
 GameObject:
   m_ObjectHideFlags: 0
@@ -369,33 +381,41 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   populationMap: {fileID: 2800000, guid: 66eaa755e96349b429d08a858b213fce, type: 3}
-  waterMap: {fileID: 2800000, guid: 6ec4a74572a74bd49866294654700b5f, type: 3}
-  H_angle: 15
-  H_roadLength: 100
-  H_laserDistance: 15
-  canBranch: 1
-  H_roadColor: {r: 1, g: 0.7202713, b: 0, a: 1}
-  followPopulationMap: 1
-  followWaterMap: 1
-  followWaterBody: 1
-  H_branchProbability: 79
-  H_branchAngle: 90
-  H_minimalBranchDistance: 10
-  maxHighways: 5
-  currentHighways: 0
+  waterMap: {fileID: 2800000, guid: c3ddf68b87d189a4ab487bfa41f7b9b8, type: 3}
+  quads: []
   occupiedXY: []
-  proposedXY: []
   existingCrossing: []
   existingCrossingYrot: []
-  rays: 0
+  H_angle: 5
+  H_roadLength: 100
+  H_laserDistance: 15
+  H_canBranch: 1
+  H_roadColor: {r: 1, g: 0, b: 0.045223236, a: 1}
+  H_branchProbability: 100
+  H_branchAngle: 90
+  H_minimalBranchDistance: 10
+  maxHighways: 8
+  currentHighways: 0
+  MR_angle: 5
+  MR_MaxRoadLength: 30
+  MR_MinRoadLength: 10
+  MR_laserDistance: 30
+  MR_canBranch: 1
+  MR_roadColor: {r: 1, g: 0.7108608, b: 0, a: 1}
+  MR_branchProbability: 65
+  MR_branchAngle: 90
+  MR_minimalBranchDistance: 7
+  maxMainRoads: 50
+  currentMainRoads: 0
   R_angle: 1
   R_minAngle: 85
   R_maxAngle: 95
-  R_minPopulation: 0.3
-  R_laserDistance: 2
+  R_minPopulation: 0.6
+  R_laserDistance: 5
   R_minimalBranchDistance: 2
-  R_branchProbability: 62
-  R_roadColor: {r: 1, g: 0.91944766, b: 0, a: 1}
+  R_branchProbability: 63
+  R_roadColor: {r: 0.10218027, g: 0.972549, b: 0, a: 1}
+  maxGeneratedStreets: 10
   roads: []
   newRoads: []
   removeRoads: []
@@ -421,7 +441,7 @@ Prefab:
     m_Modifications:
     - target: {fileID: 4139983383993292, guid: 2a8d81ccf9a8d39418642ec5e7b63d10, type: 2}
       propertyPath: m_LocalPosition.x
-      value: 688.2
+      value: 531
       objectReference: {fileID: 0}
     - target: {fileID: 4139983383993292, guid: 2a8d81ccf9a8d39418642ec5e7b63d10, type: 2}
       propertyPath: m_LocalPosition.y
@@ -463,7 +483,7 @@ Prefab:
     m_Modifications:
     - target: {fileID: 4139983383993292, guid: 2a8d81ccf9a8d39418642ec5e7b63d10, type: 2}
       propertyPath: m_LocalPosition.x
-      value: 688.2
+      value: 531
       objectReference: {fileID: 0}
     - target: {fileID: 4139983383993292, guid: 2a8d81ccf9a8d39418642ec5e7b63d10, type: 2}
       propertyPath: m_LocalPosition.y

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 namespace V02 {
     public class HighwayGeneratorV02 : MonoBehaviour {
@@ -9,15 +10,17 @@ namespace V02 {
 
         [Header("Highway Branch object")]
         public GameObject BranchPrfab;
-        public GameObject roadBranch;
+        public GameObject mainRoadBranchPrefab;
         public Material Mat;
         private Color roadColor;
-        private int branchDistance;
+        private int branchDistanceHW;
+        private int branchDistanceMR;
         private bool canBranch;
         private int minBranchDistance;
         private int branchProb;
         private int maxLenght;
         private int curLenght = 0;
+        private int curStreetBranchDistance;
 
         private GameObject laserPos;
 
@@ -41,6 +44,13 @@ namespace V02 {
             settings.currentHighways++;
         }
 
+        void LateStart() {
+            InitSettings();
+            InitLaserPosition();
+            InitLineRenderer();
+            debugPos = this.gameObject.transform.position;
+        }
+
         //Get all settings from settingsObject
         void InitSettings() {
             settings = SettingsObject.Instance;
@@ -48,7 +58,7 @@ namespace V02 {
             laserDistance = settings.H_laserDistance;
             populationMap = settings.populationMap;
             waterMap = settings.waterMap;
-            canBranch = settings.canBranch;
+            canBranch = settings.H_canBranch;
             minBranchDistance = settings.H_minimalBranchDistance;
             branchProb = settings.H_branchProbability;
             maxLenght = settings.H_roadLength;
@@ -72,10 +82,33 @@ namespace V02 {
             laserPos.transform.rotation = this.transform.rotation;
         }
 
+        //Create new highway
+        public void InitBranch(Vector3 rot, Vector3 pos) {
+            LateStart();
+            this.transform.position = pos;
+
+            List<int> x = new List<int>(); //Position
+            List<int> z = new List<int>(); //Position
+            List<float> y = new List<float>(); //Rotation
+
+            this.transform.eulerAngles = new Vector3(rot.x, rot.y + settings.H_branchAngle, rot.z);
+            x.Add(Mathf.RoundToInt(laserPos.transform.position.x));
+            z.Add(Mathf.RoundToInt(laserPos.transform.position.z));
+            y.Add(rot.y + settings.H_branchAngle);
+
+            this.transform.eulerAngles = new Vector3(rot.x, rot.y - settings.H_branchAngle, rot.z);
+            x.Add(Mathf.RoundToInt(laserPos.transform.position.x));
+            z.Add(Mathf.RoundToInt(laserPos.transform.position.z));
+            y.Add(rot.y - settings.H_branchAngle);
+
+            Vector3 bestOnPopMap = PopulationConstraints(x, z, y);
+            bool waterConstraints = WaterConstraints(Mathf.RoundToInt(bestOnPopMap.z), Mathf.RoundToInt(bestOnPopMap.x));
+            this.transform.eulerAngles = new Vector3(rot.x, bestOnPopMap.y, rot.z);
+        }
+
         private void Update() {
             if (Input.anyKey) {
                 if (this.transform.position.x > 0 && this.transform.position.x < settings.populationMap.width && this.transform.position.z > 0 && this.transform.position.z < settings.populationMap.height) {
-                    NewStreet();
                     BuildFreeway();
                 }
             }
@@ -98,6 +131,7 @@ namespace V02 {
             List<float> y = new List<float>(); //Rotation
 
             //Get all positions to check.
+            angle += Random.Range(1, 3);
             float rotationY = this.transform.eulerAngles.y - (angle / 2);
             for (int i = 0; i < angle; i++) {
                 rotationY = rotationY + 1;
@@ -106,6 +140,7 @@ namespace V02 {
                 z.Add(Mathf.RoundToInt(laserPos.transform.position.z));
                 y.Add(rotationY);
             }
+            angle = settings.H_angle;
 
             Vector3 bestOnPopMap = PopulationConstraints(x, z, y);
             bool waterConstraints = WaterConstraints(Mathf.RoundToInt(bestOnPopMap.z), Mathf.RoundToInt(bestOnPopMap.x));
@@ -144,14 +179,15 @@ namespace V02 {
             newLine.transform.position = this.transform.position;
             LineRenderer nlr = newLine.AddComponent<LineRenderer>();
             nlr.material = Mat;
-            nlr.startColor = roadColor;
-            nlr.endColor = roadColor;
+            Mat.color = roadColor;
+            Mat.SetColor("_EmissionColor", Mat.color);
             nlr.positionCount = 2;
             nlr.SetPosition(0, this.transform.position);
             nlr.SetPosition(1, debugPos);
             nlr.startWidth = 5;
             nlr.endWidth = 5;
             nlr.sortingOrder = 1;
+            nlr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
             debugPos = this.transform.position;
             newLine.transform.parent = settings.transform;
         }
@@ -160,16 +196,21 @@ namespace V02 {
         void BuildRoad(bool noWater, Vector3 position) {
             if (noWater == true) {
                 Vector2 p = RoadCrossing(position);
+
+                //If p is not 0,0, that means a crossing has been found or created on this point (Kills RoadGenerator)
                 if (p != new Vector2(0, 0)) {
                     this.transform.position = new Vector3(p.x, 0, p.y);
                     this.transform.eulerAngles = new Vector3(0, 0, 0);
                     DestroyHighwayGenerator();
+                    return;
                 }
-
-
-
-                //Set new occupied position
-                settings.occupiedXY.Add(new Vector2(Mathf.RoundToInt(position.x), Mathf.RoundToInt(position.z)));
+                //Set new occupied position in a Quad
+                foreach (Quad quad in settings.quads) {
+                    if (position.x < quad.quadPosition.x && position.z < quad.quadPosition.y) {
+                        quad.occupied.Add(new Vector2(Mathf.RoundToInt(position.x), Mathf.RoundToInt(position.z)));
+                        break; //stay in own Quad
+                    }
+                }
 
                 this.transform.position = new Vector3(position.x, 0, position.z);
                 this.transform.eulerAngles = new Vector3(0, position.y, 0);
@@ -179,14 +220,17 @@ namespace V02 {
 
                 if(settings.currentHighways < settings.maxHighways) {
                     if (canBranch) {
-                        branchDistance++;
-                        int spawnNumber = Random.Range(0, 100 + 1);
-                        if (branchDistance > minBranchDistance && spawnNumber < branchProb) {
+                        branchDistanceHW++;
+                        int spawnNumber1 = Random.Range(0, 100 + 1);
+                        if (branchDistanceHW > minBranchDistance && spawnNumber1 < branchProb) {
                             GameObject branch = Instantiate(BranchPrfab, null);
                             branch.GetComponent<HighwayGeneratorV02>().InitBranch(this.transform.eulerAngles, this.transform.position);
-                            branchDistance = 0;
+                            branchDistanceHW = 0;
                         }
                     }
+                }
+                if (settings.currentMainRoads < settings.maxMainRoads) {
+                    NewMainRoad();
                 }
             }
             else {
@@ -196,60 +240,59 @@ namespace V02 {
 
         //Check for roadcrossings and handle them
         Vector2 RoadCrossing(Vector3 position) {
-            if(curLenght > 3) {
-                foreach (Vector2 x in settings.occupiedXY) {
-                    if (position.x < x.x + (laserDistance/3) && position.x > x.x - (laserDistance/3)) {
-                        if (position.z < x.y + (laserDistance / 3) && position.z > x.y - (laserDistance / 3)) {
-                            return x;
+            List<Vector2> possibleCrossings = new List<Vector2>();
+
+            if (curLenght >= 1) {
+                //Check what quad you are in.
+                foreach (Quad quad in settings.quads) {
+                    if (position.x < quad.quadPosition.x && position.z < quad.quadPosition.y) {
+
+                        //If quad is found, loop through all occupied possitions
+                        foreach (Vector2 x in quad.occupied) {
+
+                            //if there is a occupied possition found within range of our current position of X and Z
+                            if (position.x < x.x + (laserDistance / 1.5) && position.x > x.x - (laserDistance / 1.5)) {
+                                if (position.z < x.y + (laserDistance / 1.5) && position.z > x.y - (laserDistance / 1.5)) {
+                                    possibleCrossings.Add(x);
+                                }
+                            }
+                        }
+                        if (possibleCrossings.Count >= 1) {
+                            return ClosestPoint(possibleCrossings, position);
                         }
                     }
                 }
             }
-            return new Vector2(0,0);
+            return new Vector2(0, 0);
         }
 
-        //Create new highway
-        public void InitBranch(Vector3 rot, Vector3 pos) {
-            Start();
-            this.transform.position = pos;
+        public Vector2 ClosestPoint(List<Vector2> positions, Vector2 curPos) {
+            List<float> dist = new List<float>();
+            foreach (Vector2 singlePos in positions) {
+                dist.Add(Vector2.Distance(singlePos, curPos));
+            }
+            int index = dist.IndexOf(dist.Min());
+            print(index);
 
-            List<int> x = new List<int>(); //Position
-            List<int> z = new List<int>(); //Position
-            List<float> y = new List<float>(); //Rotation
-
-            this.transform.eulerAngles = new Vector3(rot.x, rot.y + settings.H_branchAngle, rot.z);
-            x.Add(Mathf.RoundToInt(laserPos.transform.position.x));
-            z.Add(Mathf.RoundToInt(laserPos.transform.position.z));
-            y.Add(rot.y + settings.H_branchAngle);
-
-            this.transform.eulerAngles = new Vector3(rot.x, rot.y - settings.H_branchAngle, rot.z);
-            x.Add(Mathf.RoundToInt(laserPos.transform.position.x));
-            z.Add(Mathf.RoundToInt(laserPos.transform.position.z));
-            y.Add(rot.y - settings.H_branchAngle);
-
-            Vector3 bestOnPopMap = PopulationConstraints(x, z, y);
-            bool waterConstraints = WaterConstraints(Mathf.RoundToInt(bestOnPopMap.z), Mathf.RoundToInt(bestOnPopMap.x));
-            this.transform.eulerAngles = new Vector3(rot.x,bestOnPopMap.y, rot.z);
+            //if it is a new road crossing (No roads have crossed this roadsection)
+            //Remember this crossing(Debug)
+            if (!settings.existingCrossing.Contains(positions[index])) {
+                print("Crossing");
+                settings.existingCrossing.Add(positions[index]);
+                settings.existingCrossingYrot.Add(this.transform.eulerAngles.y);
+            }
+            return positions[index];
         }
 
-        //Create new street
-        public void NewStreet() {
-            Vector3 x = this.transform.eulerAngles;
 
-            //Kijk naar +~90 graden
-            float rot = Random.Range(settings.R_minAngle, settings.R_maxAngle);
-            this.transform.Rotate(new Vector3(0,rot,0));
-            if(populationMap.GetPixel(Mathf.RoundToInt(laserPos.transform.position.x), Mathf.RoundToInt(laserPos.transform.position.z)).grayscale < settings.R_minPopulation) {
-                Instantiate(roadBranch, this.transform.position, this.transform.rotation, null);
-            }
-            this.transform.eulerAngles = x;
 
-            //Kijk naar -~90 graden
-            this.transform.Rotate(new Vector3(0, -rot, 0));
-            if (populationMap.GetPixel(Mathf.RoundToInt(laserPos.transform.position.x), Mathf.RoundToInt(laserPos.transform.position.z)).grayscale < settings.R_minPopulation) {
-                Instantiate(roadBranch, this.transform.position, this.transform.rotation, null);
+        public void NewMainRoad() {
+            int spawnNumber = Random.Range(0, 100 + 1);
+            if (branchDistanceHW > (settings.MR_minimalBranchDistance/2) && spawnNumber < settings.MR_branchProbability) {
+                GameObject branch = Instantiate(mainRoadBranchPrefab, null);
+                branch.GetComponent<MainRoadGeneratorV01>().InitBranch(this.transform.eulerAngles, this.transform.position);
+                branchDistanceHW = 0;
             }
-            this.transform.eulerAngles = x;
         }
 
         //Detroy object

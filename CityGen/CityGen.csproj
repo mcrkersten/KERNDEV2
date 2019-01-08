@@ -359,10 +359,13 @@
     <Compile Include="Assets\Scrips\BlockTest\GroundSystem.cs" />
     <Compile Include="Assets\Scrips\BlockTest\StreetGenerator.cs" />
     <Compile Include="Assets\Scrips\L-System\L_System.cs" />
+    <Compile Include="Assets\Scrips\ProceduralCity\BaseRoad.cs" />
     <Compile Include="Assets\Scrips\ProceduralCity\HighwayGeneratorV01.cs" />
     <Compile Include="Assets\Scrips\ProceduralCity\HighwayGeneratorV02.cs" />
+    <Compile Include="Assets\Scrips\ProceduralCity\MainRoadGeneratorV01.cs" />
     <Compile Include="Assets\Scrips\ProceduralCity\SourceImage.cs" />
     <Compile Include="Assets\Scrips\ProceduralCity\StreetGeneratorV01.cs" />
+    <Compile Include="Assets\Scrips\Quad.cs" />
     <Compile Include="Assets\Scrips\SettingsObject.cs" />
     <Compile Include="Assets\StarSystem\AudioPeer\AudioPeer.cs" />
     <Compile Include="Assets\StarSystem\CamDrag.cs" />
