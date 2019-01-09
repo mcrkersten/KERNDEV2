@@ -220,7 +220,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &182750625
 Transform:
   m_ObjectHideFlags: 0
@@ -382,40 +382,47 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   populationMap: {fileID: 2800000, guid: 66eaa755e96349b429d08a858b213fce, type: 3}
   waterMap: {fileID: 2800000, guid: c3ddf68b87d189a4ab487bfa41f7b9b8, type: 3}
-  quads: []
-  occupiedXY: []
-  existingCrossing: []
-  existingCrossingYrot: []
-  H_angle: 5
-  H_roadLength: 100
+  H_roadCrossingSnapDistance: 1.5
+  H_noise: 2
+  H_angle: 10
+  H_roadLength: 150
   H_laserDistance: 15
   H_canBranch: 1
-  H_roadColor: {r: 1, g: 0, b: 0.045223236, a: 1}
-  H_branchProbability: 100
+  H_roadColor: {r: 1, g: 0.48717904, b: 0, a: 1}
+  H_branchProbability: 54
   H_branchAngle: 90
-  H_minimalBranchDistance: 10
+  H_minimalBranchDistance: 15
   maxHighways: 8
   currentHighways: 0
-  MR_angle: 5
-  MR_MaxRoadLength: 30
-  MR_MinRoadLength: 10
-  MR_laserDistance: 30
+  MR_roadCrossingSnapDistance: 1.5
+  MR_noise: 7
+  MR_angle: 10
+  MR_MaxRoadLength: 50
+  MR_MinRoadLength: 25
+  MR_laserDistance: 5
   MR_canBranch: 1
   MR_roadColor: {r: 1, g: 0.7108608, b: 0, a: 1}
   MR_branchProbability: 65
   MR_branchAngle: 90
-  MR_minimalBranchDistance: 7
+  MR_minimalBranchDistance: 10
   maxMainRoads: 50
   currentMainRoads: 0
-  R_angle: 1
+  R_roadCrossingSnapDistance: 1.5
+  highwayClearance: 20
+  R_noise: 10
+  R_angle: 4
   R_minAngle: 85
   R_maxAngle: 95
   R_minPopulation: 0.6
   R_laserDistance: 5
   R_minimalBranchDistance: 2
-  R_branchProbability: 63
-  R_roadColor: {r: 0.10218027, g: 0.972549, b: 0, a: 1}
-  maxGeneratedStreets: 10
+  R_branchProbability: 70
+  R_roadColor: {r: 0.972549, g: 0.957678, b: 0, a: 1}
+  maxGeneratedStreets: 7
+  quads: []
+  occupiedXY: []
+  existingCrossing: []
+  existingCrossingYrot: []
   roads: []
   newRoads: []
   removeRoads: []
@@ -512,6 +519,10 @@ Prefab:
     - target: {fileID: 4139983383993292, guid: 2a8d81ccf9a8d39418642ec5e7b63d10, type: 2}
       propertyPath: m_RootOrder
       value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 1408644390065298, guid: 2a8d81ccf9a8d39418642ec5e7b63d10, type: 2}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2a8d81ccf9a8d39418642ec5e7b63d10, type: 2}

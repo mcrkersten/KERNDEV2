@@ -4,46 +4,26 @@ using UnityEngine;
 using System.Linq;
 
 namespace V02 {
-    public class StreetGeneratorV01 : MonoBehaviour {
-        private SettingsObject settings;
-
-        public GameObject BranchPrfab;
-        public Material Mat;
-        private Color roadColor;
+    public class StreetGeneratorV01 : BaseRoad {
         private int branchDistance;
-        private bool canBranch;
-        private int minBranchDistance;
-        private int branchProb;
-        private int curLenght = 0;
-        private int angle;
         private float minimalPopulation;
-        public int id;
         private int generatedStreets;
-
-        private GameObject laserPos;
-
-        private Texture2D populationMap;
-        private Texture2D waterMap;
-
-        [Header("Debug visualization")]
-        public LineRenderer lr;
-        private Vector3 debugPos;
-
-        //Settings
         private int minAngle;
         private int maxAngle;
+        private List<LineRenderer> madeRoads = new List<LineRenderer>();
 
-        private float laserDistance;
-
-        void Start() {
+        protected override void Start() {
             InitSettings();
             InitLaserPosition();
             InitLineRenderer();
+            debugPos = this.gameObject.transform.position;
         }
 
-        void InitSettings() {
+        override public void InitSettings() {
             settings = SettingsObject.Instance;
             settings.newRoads.Add(this.gameObject);
+            noise = settings.R_noise;
+            roadCrossingSnapDistance = settings.R_roadCrossingSnapDistance;
             waterMap = settings.waterMap;
             angle = settings.R_angle;
             minAngle = settings.R_minAngle;
@@ -56,58 +36,24 @@ namespace V02 {
             minimalPopulation = settings.R_minPopulation;
         }
 
-        void InitLaserPosition() {
-            laserPos = new GameObject("laserStreet");
-            laserPos.transform.parent = this.transform;
-            laserPos.transform.localPosition = new Vector3(laserDistance, 0, 0);
-            laserPos.transform.rotation = this.transform.rotation;
-        }
-
-        void InitLineRenderer() {
-            //Debug linerenderer
-            lr = this.GetComponent<LineRenderer>();
-            lr.positionCount = 2;
-            lr.SetPosition(0, this.transform.position);
-            lr.SetPosition(1, laserPos.transform.position);
-            debugPos = this.transform.position;
-        }
-
         public void BuildLoop () {
             if (this.transform.position.x > 0 && this.transform.position.x < settings.populationMap.width && this.transform.position.z > 0 && this.transform.position.z < settings.populationMap.height) {
                 BuildStreet();
-                DrawNewRoad();
+                DrawNewRoad("Street",1,-1);
                 branchDistance++;
             }
             else{
-                DestroyRoadGenerator();
+                DestroyGenerator();
                 return;
             }
         }
 
         void BuildStreet() {
-            Vector3 t = GetBestPosition();
-            BuildRoad(WaterConstraints(Mathf.RoundToInt(t.x), Mathf.RoundToInt(t.z)), t);
+            GetBestPosition();
             curLenght++;
         }
 
-        Vector3 GetBestPosition() {
-            List<int> x = new List<int>(); //Position
-            List<int> z = new List<int>(); //Position
-            List<float> y = new List<float>(); //Rotation
-
-            float rotationY = this.transform.eulerAngles.y - (angle / 2);
-            for (int i = 0; i < angle; i++) {
-                rotationY = rotationY + 1;
-                this.transform.eulerAngles = new Vector3(this.transform.eulerAngles.x, rotationY, this.transform.eulerAngles.z);
-                x.Add(Mathf.RoundToInt(laserPos.transform.position.x));
-                z.Add(Mathf.RoundToInt(laserPos.transform.position.z));
-                y.Add(rotationY);
-            }
-            Vector3 bestOnPopMap = PopulationConstraints(x, z, y);
-            return bestOnPopMap;
-        }
-
-        Vector3 PopulationConstraints(List<int> x, List<int> z, List<float> y) {
+        protected override Vector3 PopulationConstraints(List<int> x, List<int> z, List<float> y) {
             float heighest = 1;
             Vector3 heighestPopPos = new Vector3();
             for (int i = 0; i < x.Count; i++) {
@@ -118,21 +64,13 @@ namespace V02 {
                 }
             }
             if(minimalPopulation < heighest) {
-                DestroyRoadGenerator();
+                DestroyGenerator();
             }
             return heighestPopPos;
         }
 
-        bool WaterConstraints(int x, int z) {
-            float waterAmount = waterMap.GetPixel(x, z).grayscale;
-            if (waterAmount < .5) {
-                return false; //To much water
-            }
-            return true;
-        }
-
         //Place new point if all tests are correct or disable this object
-        void BuildRoad(bool noWater, Vector3 position) {
+        protected override void BuildRoad(bool noWater, Vector3 position) {
             if (noWater == true && generatedStreets < settings.maxGeneratedStreets) {
                 generatedStreets++;
                 Vector2 p = RoadCrossing(position);
@@ -141,7 +79,7 @@ namespace V02 {
                 if (p != new Vector2(0, 0)) {
                     this.transform.position = new Vector3(p.x, 0, p.y);
                     this.transform.eulerAngles = new Vector3(0, 0, 0);
-                    DestroyRoadGenerator();
+                    DestroyGenerator();
                     return;
                 }
                 //Set new occupied position in a Quad
@@ -167,54 +105,44 @@ namespace V02 {
                 }
             }
             else {
-                DestroyRoadGenerator();
+                DestroyGenerator();
                 return;
             }
         }
-        //Check for roadcrossings and handle them
-        Vector2 RoadCrossing(Vector3 position) {
-            List<Vector2> possibleCrossings = new List<Vector2>();
 
+        protected override Vector2 RoadCrossing(Vector3 position) {
+            List<Vector2> possibleCrossings = new List<Vector2>();
             if (curLenght >= 1) {
                 //Check what quad you are in.
-                foreach(Quad quad in settings.quads) {
-                    if(position.x < quad.quadPosition.x && position.z < quad.quadPosition.y) {
+                foreach (Quad quad in settings.quads) {
+                    if (position.x < quad.quadPosition.x && position.z < quad.quadPosition.y) {
 
                         //If quad is found, loop through all occupied possitions
-                        foreach (Vector2 x in quad.occupied) {
-
+                        foreach (Vector2 x in quad.occupiedHighway) {
                             //if there is a occupied possition found within range of our current position of X and Z
-                            if (position.x < x.x + (laserDistance / 1.25) && position.x > x.x - (laserDistance / 1.25)) {
-                                if (position.z < x.y + (laserDistance / 1.25) && position.z > x.y - (laserDistance / 1.25)) {
+                            if (position.x < x.x + (settings.highwayClearance) && position.x > x.x - (settings.highwayClearance)) {
+                                if (position.z < x.y + (settings.highwayClearance) && position.z > x.y - (settings.highwayClearance)) {
+                                    DestroyGenerator();
+                                    this.gameObject.SetActive(false);
+                                }
+                            }
+                        }
+                        foreach (Vector2 x in quad.occupied) {
+                            //if there is a occupied possition found within range of our current position of X and Z
+                            if (position.x < x.x + (laserDistance / roadCrossingSnapDistance) && position.x > x.x - (laserDistance / roadCrossingSnapDistance)) {
+                                if (position.z < x.y + (laserDistance / roadCrossingSnapDistance) && position.z > x.y - (laserDistance / roadCrossingSnapDistance)) {
                                     possibleCrossings.Add(x);
                                 }
                             }
                         }
+
                         if (possibleCrossings.Count >= 1) {
                             return ClosestPoint(possibleCrossings, position);
                         }
-                    }         
+                    }
                 }
             }
             return new Vector2(0, 0);
-        }
-
-        public Vector2 ClosestPoint(List<Vector2> positions, Vector2 curPos) {
-            List<float> dist = new List<float>();
-            foreach(Vector2 singlePos in positions) {
-                dist.Add(Vector2.Distance(singlePos, curPos));
-            }
-            int index = dist.IndexOf(dist.Min());
-            print(index);
-
-            //if it is a new road crossing (No roads have crossed this roadsection)
-            //Remember this crossing(Debug)
-            if (!settings.existingCrossing.Contains(positions[index])) {
-                print("Crossing");
-                settings.existingCrossing.Add(positions[index]);
-                settings.existingCrossingYrot.Add(this.transform.eulerAngles.y);
-            }
-            return positions[index];
         }
 
         public void NewStreet() {
@@ -248,28 +176,8 @@ namespace V02 {
             this.transform.eulerAngles = x;
         }
 
-        void DestroyRoadGenerator() {
+        protected override void DestroyGenerator() {
             settings.removeRoads.Add(this.gameObject);
-        }
-
-        void DrawNewRoad() {
-            GameObject newLine = new GameObject("Street-Section");
-
-            //Line renderer
-            newLine.transform.position = this.transform.position;
-            LineRenderer nlr = newLine.AddComponent<LineRenderer>();
-            nlr.material = Mat;
-            Mat.color = roadColor;
-            nlr.endColor = roadColor;
-            nlr.positionCount = 2;
-            nlr.SetPosition(0, this.transform.position);
-            nlr.SetPosition(1, debugPos);
-            nlr.startWidth = 1;
-            nlr.endWidth = 1;
-            nlr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
-            debugPos = this.transform.position;
-
-            newLine.transform.parent = settings.transform;
         }
     }
 }

@@ -16,7 +16,7 @@ namespace V02 {
 
         // Use this for initialization
         void Start() {
-            image = SettingsObject.Instance.populationMap;
+            image = SettingsObject.Instance.waterMap;
             rd = GetComponent<Renderer>();
             meshFilter = GetComponent<MeshFilter>();
             GeneratePlane();

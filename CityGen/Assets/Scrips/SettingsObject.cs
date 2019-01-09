@@ -24,19 +24,17 @@ namespace V02 {
                 return instance;
             }
         }
-        [Header("Textures")]
+
+        //BASE-ROAD
+        ///////////////////////////////////////////////////////////////////////////////
         public Texture2D populationMap;
         public Texture2D waterMap;
-
-        [SerializeField]
-        public List<Quad> quads;
-        public List<Vector2> occupiedXY;
-        public List<Vector2> existingCrossing;
-        public List<float> existingCrossingYrot;
 
         //HIGHWAY
         ///////////////////////////////////////////////////////////////////////////////
         [Header("Basic Highway Setings")]
+        public float H_roadCrossingSnapDistance = 1.5f;
+        public int H_noise;
         public int H_angle;
         public int H_roadLength;
         public float H_laserDistance;
@@ -51,6 +49,8 @@ namespace V02 {
         //MAIN-ROAD
         ///////////////////////////////////////////////////////////////////////////////
         [Header("MainRoad Setings")]
+        public float MR_roadCrossingSnapDistance = 1.25f;
+        public int MR_noise;
         public int MR_angle;
         public int MR_MaxRoadLength;
         public int MR_MinRoadLength;
@@ -66,6 +66,9 @@ namespace V02 {
         //STREET
         ///////////////////////////////////////////////////////////////////////////////
         [Header("Street Settings")]
+        public float R_roadCrossingSnapDistance = 1.2f;
+        public float highwayClearance = 3;
+        public int R_noise;
         public int R_angle;
         public int R_minAngle = 89;
         public int R_maxAngle = 91;
@@ -75,6 +78,15 @@ namespace V02 {
         public int R_branchProbability;
         public Color R_roadColor;
         public int maxGeneratedStreets;
+
+
+        //UNTIL
+        ///////////////////////////////////////////////////////////////////////////////
+        [SerializeField]
+        public List<Quad> quads;
+        public List<Vector2> occupiedXY;
+        public List<Vector2> existingCrossing;
+        public List<float> existingCrossingYrot;
 
         public List<GameObject> roads = new List<GameObject>();
         public List<GameObject> newRoads = new List<GameObject>();
