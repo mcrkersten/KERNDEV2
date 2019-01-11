@@ -42,10 +42,10 @@ namespace V02 {
             tri[5] = 1;
 
             Vector3[] normals = new Vector3[4];                              //Normals direction
-            normals[0] = -Vector3.up;
-            normals[1] = -Vector3.up;
-            normals[2] = -Vector3.up;
-            normals[3] = -Vector3.up;
+            normals[0] = Vector3.up;
+            normals[1] = Vector3.up;
+            normals[2] = Vector3.up;
+            normals[3] = Vector3.up;
 
             Vector2[] uv = new Vector2[4];                                   //Mesh UV
             uv[0] = new Vector2(0, 0);

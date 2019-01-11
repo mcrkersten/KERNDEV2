@@ -55,8 +55,8 @@ MonoBehaviour:
   BranchPrfab: {fileID: 1408644390065298, guid: 40a0a1f0c182e7d43be902faeadd2e84,
     type: 2}
   Mat: {fileID: 2100000, guid: c5e89453a1546d74aac59012f78137e3, type: 2}
-  id: 0
   lr: {fileID: 120914950373522088}
+  buildingMaterial: {fileID: 2100000, guid: 07215017f8f98774a9db3a0cc3bdd8c7, type: 2}
 --- !u!120 &120914950373522088
 LineRenderer:
   m_ObjectHideFlags: 1

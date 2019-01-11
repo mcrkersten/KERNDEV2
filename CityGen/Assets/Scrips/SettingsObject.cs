@@ -139,9 +139,9 @@ namespace V02 {
             int w = width;
             int h = height;
 
-            for(int i = 0; i < 10; i++) {            
+            for(int i = 0; i < 20; i++) {            
                 CreateQuad(w, h, quadParent);
-                for(int x = 0; x < 9; x++) {
+                for(int x = 0; x < 19; x++) {
                     w = w + width;
                     CreateQuad(w, h, quadParent);
                 }

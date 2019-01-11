@@ -87,7 +87,7 @@ namespace V02 {
 
         protected virtual Vector3 PopulationConstraints(List<int> x, List<int> z, List<float> y) {
             float heighest = 1;
-            Vector3 heighestPopPos = new Vector3();
+            Vector3 heighestPopPos = laserPos.transform.position;
             for (int i = 0; i < x.Count; i++) {
                 float heighestPopulation = populationMap.GetPixel(x[i], z[i]).grayscale;
                 if (heighestPopulation < heighest) {
