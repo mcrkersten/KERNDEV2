@@ -4,7 +4,6 @@ using UnityEngine;
 using System.Linq;
 
 namespace V02 {
-
     public class BaseRoad : MonoBehaviour {
 
         public GameObject BranchPrfab;
@@ -112,6 +111,9 @@ namespace V02 {
             //Line renderer
             newLine.transform.position = this.transform.position;
             LineRenderer nlr = newLine.AddComponent<LineRenderer>();
+            MeshFilter mf = newLine.AddComponent<MeshFilter>();
+            MeshRenderer mr = newLine.AddComponent<MeshRenderer>();
+            nlr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
             nlr.material = Mat;
             Mat.color = roadColor;
             nlr.positionCount = 2;
@@ -119,10 +121,19 @@ namespace V02 {
             nlr.SetPosition(1, debugPos);
             nlr.startWidth = size;
             nlr.endWidth = size;
+            Mesh m = new Mesh();
+            m.Clear();
+            nlr.BakeMesh(m,settings.camera,true);
+            mf.mesh = m;
+            Bounds carBounds = mf.mesh.bounds;
+            Vector3 whereYouWantMe = this.transform.position;
+            Vector3 offset = newLine.transform.position - newLine.transform.TransformPoint(this.transform.position);
+            newLine.transform.position = whereYouWantMe + offset;
+            mr.material = Mat;
             nlr.sortingOrder = sortOrder;
-            debugPos = this.transform.position;
-            nlr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+            debugPos = this.transform.position;       
             newLine.transform.parent = settings.transform;
+            Destroy(nlr);
         }
 
         protected virtual Vector2 RoadCrossing(Vector3 position) {

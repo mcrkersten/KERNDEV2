@@ -2,39 +2,57 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
+using System.IO;
+using System.Text;
 
 namespace V02 {
+    //[ExecuteInEditMode]
     public class SettingsMenu : EditorWindow {
 
-        SettingsObject settings;
-        int minLimit = 85;
-        int maxLimit = 95;
-        int tab = 0;
+        private SettingsObject settings;
+        private int minLimit = 85;
+        private int maxLimit = 95;
+        private int tab = 0; 
+
         [MenuItem("Window/CityGenerator")]
-        static void ShowWindow() {
+        private static void ShowWindow() {        
             GetWindow<SettingsMenu>("City Settings");
         }
 
         private void OnGUI() {
             settings = SettingsObject.Instance;
-            tab = GUILayout.Toolbar(tab, new string[] { "Highways","Main Roads","Streets" });
-            switch (tab) {
-                case 0:
-                    Highway();
-                    break;
+            
 
-                case 1:
-                    MainRoad();
-                    break;
-                
-
-                case 2:
-                    Street();
-                    break;
+            if (settings.editorStart) {
+                IsGenerating();
+                //this.Focus();
             }
+            else if (settings.editorEnd) {
+                DoneGenerating();
+                //this.Focus();
+            }
+
+            else {
+                tab = GUILayout.Toolbar(tab, new string[] { "Highways", "Main Roads", "Streets" });
+                switch (tab) {
+                    case 0:
+                        Highway();
+                        break;
+
+                    case 1:
+                        MainRoad();
+                        break;
+
+
+                    case 2:
+                        Street();
+                        break;
+                }
+            }
+            
         }
 
-        void Highway() {
+        private void Highway() {
             var style = new GUIStyle(GUI.skin.label) {
                 fontSize = 15,
                 fixedHeight = 22,
@@ -44,34 +62,34 @@ namespace V02 {
             GUILayout.Label("Texture Maps", style);
 
             GUILayout.BeginArea(new Rect((Screen.width / 2) - 95, 60, 200, 120));
-                EditorGUILayout.BeginHorizontal();
-                    settings.populationMap = TextureField("Population", settings.populationMap);
-                    settings.waterMap = TextureField("Water", settings.waterMap);
-                EditorGUILayout.EndHorizontal();
+            EditorGUILayout.BeginHorizontal();
+            settings.populationMap = TextureField("Population", settings.populationMap);
+            settings.waterMap = TextureField("Water", settings.waterMap);
+            EditorGUILayout.EndHorizontal();
             GUILayout.EndArea();
 
             GUILayout.Space(115);
             EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
 
             GUILayout.BeginArea(new Rect((Screen.width / 2) - 95, 190, 200, 140));
-                GUILayout.Label("Basic Highway Settings", style);
-                EditorGUILayout.BeginHorizontal();
-                    settings.H_angle = VariableIntField("Max Angle", "The angle of search and maximum turn angle", settings.H_angle, 35);
-                    settings.H_laserDistance = VariableFloatField("Section Lenght", "The lengh of a road section", settings.H_laserDistance);
-                EditorGUILayout.EndHorizontal();
-            
+            GUILayout.Label("Basic Highway Settings", style);
+            EditorGUILayout.BeginHorizontal();
+            settings.H_angle = VariableIntField("Max Angle", "The angle of search and maximum turn angle", settings.H_angle, 35);
+            settings.H_laserDistance = VariableFloatField("Section Lenght", "The lengh of a road section", settings.H_laserDistance);
+            EditorGUILayout.EndHorizontal();
 
-                EditorGUILayout.BeginHorizontal();
-                    settings.H_roadLength = VariableIntField("Max Lenght", "The max lenght a road may reach", settings.H_roadLength, 100);
-                    settings.H_noise = VariableIntField("Noise", "creates more random road pattern", settings.H_noise, 5);
-                EditorGUILayout.EndHorizontal();
+
+            EditorGUILayout.BeginHorizontal();
+            settings.H_roadLength = VariableIntField("Max Lenght", "The max lenght a road may reach", settings.H_roadLength, 150);
+            settings.H_noise = VariableIntField("Noise", "creates more random road pattern", settings.H_noise, 5);
+            EditorGUILayout.EndHorizontal();
             settings.H_roadColor = ColorField("Road Color", "Debug line color", settings.H_roadColor);
             GUILayout.EndArea();
 
             GUILayout.BeginArea(new Rect((Screen.width / 2) - 65, 330, 200, 100));
-                EditorGUILayout.BeginHorizontal();
-                    settings.H_canBranch = VariableBoolField("Highway can branch", settings.H_canBranch);
-                EditorGUILayout.EndHorizontal();
+            EditorGUILayout.BeginHorizontal();
+            settings.H_canBranch = VariableBoolField("Highway can branch", settings.H_canBranch);
+            EditorGUILayout.EndHorizontal();
             GUILayout.EndArea();
 
 
@@ -81,16 +99,16 @@ namespace V02 {
                 minSize = new Vector2(250, 535);
                 maxSize = new Vector2(250, 535);
                 GUILayout.BeginArea(new Rect((Screen.width / 2) - 95, 370, 200, 165));
-                    GUILayout.Label("Branch Settings", style);
-                    settings.H_branchProbability = IntSliderField("Branch probability", settings.H_branchProbability);
-                    ProgressBar(settings.H_branchProbability / 100.0f, "Branch probability: " + settings.H_branchProbability + "%");
+                GUILayout.Label("Branch Settings", style);
+                settings.H_branchProbability = IntSliderField("Branch probability", settings.H_branchProbability);
+                ProgressBar(settings.H_branchProbability / 100.0f, "Branch probability: " + settings.H_branchProbability + "%");
 
-                    EditorGUILayout.BeginHorizontal();
-                        settings.H_branchAngle = VariableIntField("Branch Angle", "The Angle of the new road", settings.H_branchAngle, 90);
-                        settings.H_minimalBranchDistance = VariableIntField("Dist branches", "The minimum distance for a new branch", settings.H_minimalBranchDistance, 50);
-                    EditorGUILayout.EndHorizontal();
+                EditorGUILayout.BeginHorizontal();
+                settings.H_branchAngle = VariableIntField("Branch Angle", "The Angle of the new road", settings.H_branchAngle, 90);
+                settings.H_minimalBranchDistance = VariableIntField("Dist branches", "The minimum distance for a new branch", settings.H_minimalBranchDistance, 50);
+                EditorGUILayout.EndHorizontal();
 
-                    settings.maxHighways = VariableIntField("Max highways", "The maximum amount of highways", settings.maxHighways, 30);
+                settings.maxHighways = VariableIntField("Max highways", "The maximum amount of highways", settings.maxHighways, 30);
                 GUILayout.EndArea();
                 GUILayout.Space(150);
 
@@ -102,11 +120,11 @@ namespace V02 {
             }
 
             if (GUILayout.Button("Build City")) {
-
+                UnityEditor.EditorApplication.isPlaying = true;
             }
         }
 
-        void MainRoad() {
+        private void MainRoad() {
             var style = new GUIStyle(GUI.skin.label) {
                 fontSize = 15,
                 fixedHeight = 22,
@@ -116,28 +134,28 @@ namespace V02 {
             GUILayout.Label("Main road Settings", style);
 
             GUILayout.BeginArea(new Rect((Screen.width / 2) - 95, 60, 200, 160));
-                EditorGUILayout.BeginHorizontal();
-                    settings.MR_angle = VariableIntField("TurnRadius","The max amount a new section can rotate", settings.MR_angle , 20);
-                    settings.maxMainRoads = VariableIntField("Max Roads","The Maximum allowed Main roads", settings.maxMainRoads, 100);
-                EditorGUILayout.EndHorizontal();
-                GUILayout.Space(5);
-                EditorGUILayout.BeginHorizontal();
-                    settings.MR_MinRoadLength = VariableIntField("Min Lenght", "Minimum amount of roadsections a single generator can create.", settings.MR_MinRoadLength, 20);
-                    settings.MR_MaxRoadLength = VariableIntField("Max Lenght", "Maximum amount of roadsections a single generator can create.", settings.MR_MaxRoadLength, 50);
-                EditorGUILayout.EndHorizontal();
-                GUILayout.Space(5);
-                EditorGUILayout.BeginHorizontal();
-                    settings.MR_laserDistance = VariableFloatField("Section Lenght", "Maximum amount of roadsections a single generator can create.", settings.MR_laserDistance);
-                    settings.MR_noise = VariableIntField("Noise", "creates more random road pattern", settings.MR_noise, 5);
-                EditorGUILayout.EndHorizontal();
-                GUILayout.Space(5);
-                settings.MR_roadColor = ColorField("Road Color", "Minimum amount of roadsections a single generator can create.", settings.MR_roadColor);
+            EditorGUILayout.BeginHorizontal();
+            settings.MR_angle = VariableIntField("TurnRadius", "The max amount a new section can rotate", settings.MR_angle, 20);
+            settings.maxMainRoads = VariableIntField("Max Roads", "The Maximum allowed Main roads", settings.maxMainRoads, 100);
+            EditorGUILayout.EndHorizontal();
+            GUILayout.Space(5);
+            EditorGUILayout.BeginHorizontal();
+            settings.MR_MinRoadLength = VariableIntField("Min Lenght", "Minimum amount of roadsections a single generator can create.", settings.MR_MinRoadLength, 25);
+            settings.MR_MaxRoadLength = VariableIntField("Max Lenght", "Maximum amount of roadsections a single generator can create.", settings.MR_MaxRoadLength, 50);
+            EditorGUILayout.EndHorizontal();
+            GUILayout.Space(5);
+            EditorGUILayout.BeginHorizontal();
+            settings.MR_laserDistance = VariableFloatField("Section Lenght", "Maximum amount of roadsections a single generator can create.", settings.MR_laserDistance);
+            settings.MR_noise = VariableIntField("Noise", "creates more random road pattern", settings.MR_noise, 15);
+            EditorGUILayout.EndHorizontal();
+            GUILayout.Space(5);
+            settings.MR_roadColor = ColorField("Road Color", "Minimum amount of roadsections a single generator can create.", settings.MR_roadColor);
             GUILayout.EndArea();
 
             GUILayout.BeginArea(new Rect((Screen.width / 2) - 65, 230, 200, 100));
-                EditorGUILayout.BeginHorizontal();
-                    settings.MR_canBranch = VariableBoolField("Road can branch", settings.MR_canBranch);
-                EditorGUILayout.EndHorizontal();
+            EditorGUILayout.BeginHorizontal();
+            settings.MR_canBranch = VariableBoolField("Road can branch", settings.MR_canBranch);
+            EditorGUILayout.EndHorizontal();
             GUILayout.EndArea();
 
             if (settings.MR_canBranch) {
@@ -146,13 +164,13 @@ namespace V02 {
                 minSize = new Vector2(250, 400);
                 maxSize = new Vector2(250, 400);
                 GUILayout.BeginArea(new Rect((Screen.width / 2) - 95, 270, 200, 165));
-                    GUILayout.Label("Branch Settings", style);
-                    settings.MR_branchProbability = IntSliderField("Branch probability", settings.MR_branchProbability);
-                    ProgressBar(settings.MR_branchProbability / 100.0f, "Branch probability: " + settings.MR_branchProbability + "%");
-                    EditorGUILayout.BeginHorizontal();
-                        settings.MR_branchAngle = VariableIntField("Branch Angle", "The Angle of the new road", settings.MR_branchAngle, 90);
-                        settings.MR_minimalBranchDistance = VariableIntField("Dist branches", "The minimum distance between branches", settings.MR_minimalBranchDistance, 50);
-                    EditorGUILayout.EndHorizontal();
+                GUILayout.Label("Branch Settings", style);
+                settings.MR_branchProbability = IntSliderField("Branch probability", settings.MR_branchProbability);
+                ProgressBar(settings.MR_branchProbability / 100.0f, "Branch probability: " + settings.MR_branchProbability + "%");
+                EditorGUILayout.BeginHorizontal();
+                settings.MR_branchAngle = VariableIntField("Branch Angle", "The Angle of the new road", settings.MR_branchAngle, 90);
+                settings.MR_minimalBranchDistance = VariableIntField("Dist branches", "The minimum distance between branches", settings.MR_minimalBranchDistance, 50);
+                EditorGUILayout.EndHorizontal();
                 GUILayout.EndArea();
             }
             else {
@@ -161,7 +179,7 @@ namespace V02 {
             }
         }
 
-        void Street() {
+        private void Street() {
             minSize = new Vector2(250, 330);
             maxSize = new Vector2(250, 330);
 
@@ -174,15 +192,15 @@ namespace V02 {
             GUILayout.Label("Basic Street Settings", style);
 
             GUILayout.BeginArea(new Rect((Screen.width / 2) - 95, 60, 200, 120));
-                EditorGUILayout.BeginHorizontal();
-                    settings.R_angle = VariableIntField("Turn Angle", "The amount a road can turn without being a intersection", settings.R_angle, 35);
-                    settings.R_laserDistance = VariableFloatField("Section Lenght", "The lengh of a road section", settings.R_laserDistance);
-                EditorGUILayout.EndHorizontal();
-            
+            EditorGUILayout.BeginHorizontal();
+            settings.R_angle = VariableIntField("Turn Angle", "The amount a road can turn without being a intersection", settings.R_angle, 35);
+            settings.R_laserDistance = VariableFloatField("Section Lenght", "The lengh of a road section", settings.R_laserDistance);
+            EditorGUILayout.EndHorizontal();
 
-                EditorGUILayout.BeginHorizontal();
-                    settings.R_minPopulation = VariableFloatField("Minimal pop", "Minimal population for a road to spawn", settings.R_minPopulation);
-                    settings.R_noise = VariableIntField("Noise", "creates more random road pattern", settings.R_noise, 5);
+
+            EditorGUILayout.BeginHorizontal();
+            settings.R_minPopulation = VariableFloatField("Minimal pop", "Minimal population for a road to spawn", settings.R_minPopulation);
+            settings.R_noise = VariableIntField("Noise", "creates more random road pattern", settings.R_noise, 15);
             EditorGUILayout.EndHorizontal();
 
             settings.R_roadColor = ColorField("Road Color", "Debug line color", settings.R_roadColor);
@@ -195,15 +213,49 @@ namespace V02 {
             GUILayout.Label("Intersection Settings", style);
 
             EditorGUILayout.BeginHorizontal();
-                settings.R_minAngle = VariableIntField("Min Angle", "The minimal angle a intersaction has on it parent", settings.R_minAngle, 1000);
-                settings.R_maxAngle = VariableIntField("Max Angle", "The maximal angle a intersaction has on it parent", settings.R_maxAngle, 1000);
-                EditorGUILayout.EndHorizontal();
-                AngleVisual(settings.R_maxAngle, settings.R_minAngle);
+            settings.R_minAngle = VariableIntField("Min Angle", "The minimal angle a intersaction has on it parent", settings.R_minAngle, 1000);
+            settings.R_maxAngle = VariableIntField("Max Angle", "The maximal angle a intersaction has on it parent", settings.R_maxAngle, 1000);
+            EditorGUILayout.EndHorizontal();
+            AngleVisual(settings.R_maxAngle, settings.R_minAngle);
 
-                GUILayout.Space(10);
-                settings.R_branchProbability = IntSliderField("Branch probability", settings.R_branchProbability);
-                ProgressBar(settings.R_branchProbability / 100.0f, "Branch probability: " + settings.R_branchProbability + "%");
+            GUILayout.Space(10);
+            settings.R_branchProbability = IntSliderField("Branch probability", settings.R_branchProbability);
+            ProgressBar(settings.R_branchProbability / 100.0f, "Branch probability: " + settings.R_branchProbability + "%");
             GUILayout.EndArea();
+        }
+
+        private void IsGenerating() {
+            var style = new GUIStyle(GUI.skin.label) {
+                fontSize = 15,
+                fixedHeight = 22,
+                alignment = TextAnchor.UpperCenter,
+            };
+            GUILayout.Space(10);
+            GUILayout.Label("Currently Generating", style);
+
+            if (GUILayout.Button("Stop Generating")) {
+                UnityEditor.EditorApplication.isPaused = true;
+                settings.editorStart = false;
+                settings.editorEnd = true;
+            }
+        }
+
+        private void DoneGenerating() {
+            var style = new GUIStyle(GUI.skin.label) {
+                fontSize = 15,
+                fixedHeight = 22,
+                alignment = TextAnchor.UpperCenter,
+            };
+            GUILayout.Space(10);
+            GUILayout.Label("Done Generating", style);
+
+            if (GUILayout.Button("Save City as OBJ")) {
+                DoExport(true);
+            }
+
+            if (GUILayout.Button("Cancel")) {
+                UnityEditor.EditorApplication.isPlaying = false;
+            }
         }
 
         private static Texture2D TextureField(string name, Texture2D texture) {
@@ -303,5 +355,123 @@ namespace V02 {
             }
             EditorGUILayout.MinMaxSlider(ref max, ref min, minLimit, maxLimit);
         }
+
+        private static void DoExport(bool makeSubmeshes) {
+            string meshName = "GeneratedCity";
+            string fileName = EditorUtility.SaveFilePanel("Export .obj file", "", meshName, "obj");
+
+            ObjExporterScript.Start();
+
+            StringBuilder meshString = new StringBuilder();
+
+            meshString.Append("#" + meshName + ".obj"
+                                + "\n#" + System.DateTime.Now.ToLongDateString()
+                                + "\n#" + System.DateTime.Now.ToLongTimeString()
+                                + "\n#-------"
+                                + "\n\n");
+
+            Transform t = SettingsObject.Instance.gameObject.transform;
+
+            Vector3 originalPosition = t.position;
+            t.position = Vector3.zero;
+
+            if (!makeSubmeshes) {
+                meshString.Append("g ").Append(t.name).Append("\n");
+            }
+            meshString.Append(ProcessTransform(t, makeSubmeshes));
+
+            WriteToFile(meshString.ToString(), fileName);
+
+            t.position = originalPosition;
+
+            ObjExporterScript.End();
+            Debug.Log("Exported Mesh: " + fileName);
+        }
+
+        private static string ProcessTransform(Transform t, bool makeSubmeshes) {
+            StringBuilder meshString = new StringBuilder();
+
+            meshString.Append("#" + t.name
+                            + "\n#-------"
+                            + "\n");
+
+            if (makeSubmeshes) {
+                meshString.Append("g ").Append(t.name).Append("\n");
+            }
+
+            MeshFilter mf = t.GetComponent<MeshFilter>();
+            if (mf) {
+                meshString.Append(ObjExporterScript.MeshToString(mf, t));
+            }
+
+            for (int i = 0; i < t.childCount; i++) {
+                meshString.Append(ProcessTransform(t.GetChild(i), makeSubmeshes));
+            }
+
+            return meshString.ToString();
+        }
+
+        private static void WriteToFile(string s, string filename) {
+            using (StreamWriter sw = new StreamWriter(filename)) {
+                sw.Write(s);
+            }
+        }
+    }
+
+    public class ObjExporterScript {
+        private static int StartIndex = 0;
+
+        public static void Start() {
+            StartIndex = 0;
+        }
+        public static void End() {
+            StartIndex = 0;
+        }
+
+
+        public static string MeshToString(MeshFilter mf, Transform t) {
+            Vector3 s = t.localScale;
+            Vector3 p = t.localPosition;
+            Quaternion r = t.localRotation;
+
+
+            int numVertices = 0;
+            Mesh m = mf.sharedMesh;
+            if (!m) {
+                return "####Error####";
+            }
+
+            StringBuilder sb = new StringBuilder();
+
+            foreach (Vector3 vv in m.vertices) {
+                Vector3 v = t.TransformPoint(vv);
+                numVertices++;
+                sb.Append(string.Format("v {0} {1} {2}\n", v.x, v.y, -v.z));
+            }
+            sb.Append("\n");
+            foreach (Vector3 nn in m.normals) {
+                Vector3 v = r * nn;
+                sb.Append(string.Format("vn {0} {1} {2}\n", v.x, v.y, -v.z));
+            }
+            sb.Append("\n");
+            foreach (Vector3 v in m.uv) {
+                sb.Append(string.Format("vt {0} {1}\n", v.x, v.y));
+            }
+            for (int material = 0; material < m.subMeshCount; material++) {
+                sb.Append("\n");
+
+                int[] triangles = m.GetTriangles(material);
+                for (int i = 0; i < triangles.Length; i += 3) {
+                    sb.Append(string.Format("f {1}/{1}/{1} {0}/{0}/{0} {2}/{2}/{2}\n",
+                        triangles[i] + 1 + StartIndex, triangles[i + 1] + 1 + StartIndex, triangles[i + 2] + 1 + StartIndex));
+                }
+            }
+
+            StartIndex += numVertices;
+            return sb.ToString();
+        }
     }
 }
+
+
+

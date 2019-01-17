@@ -144,7 +144,7 @@ namespace V02 {
 
         void GenerateBuildingMesh(GameObject streetBuilding, Vector3 start, Vector3 end, bool leftStreet, bool newGen, bool corner) {
             float offset = 0;
-            float roadOffset = 1;
+            float roadOffset = 1.5f;
             float cornerOrEndDecrease = 1;
             float streetLenght = (Vector2.Distance(new Vector2(start.x, start.z), new Vector2(end.x, end.z)));
 
@@ -164,30 +164,380 @@ namespace V02 {
                 divisions.Add(sum);
             }
 
-
-            //Top
+            
+            //Building  type 1
+            
             foreach (float d in divisions) {
-                float size = d;
-                float height = Random.Range(5 + heighest, 20 + heighest) * (heighest + 1);
 
-                Vector3 p0 = new Vector3(0, 0, size);
-                Vector3 p1 = new Vector3(size, 0, size);
+                int buildingType = Random.Range(0, 20);
 
-                Vector3 p2 = new Vector3(size, 0, 0);
-                Vector3 p3 = new Vector3(0, 0, 0);
-
-                Vector3 p4 = new Vector3(0, height, size);
-
-                Vector3 p5 = new Vector3(size, height, size);
-                Vector3 p6 = new Vector3(size, height, 0);
-                Vector3 p7 = new Vector3(0, height, 0);
+                //Point
+                if(buildingType == 3 && d > maxBuildingSize/2 && heighest > .4) {
+                    float size = d;
+                    float height = Random.Range((laserDistance) + heighest, (laserDistance + heighest) * 4);
 
 
-                Vector3[] vertices = new Vector3[]
-                {
-	                // Bottom
-	                p0, p1, p2, p3,
+                    Vector3 p0 = new Vector3(0, 0, size);
+                    Vector3 p1 = new Vector3(size, 0, size);
+
+                    Vector3 p2 = new Vector3(size, 0, 0);
+                    Vector3 p3 = new Vector3(0, 0, 0);
+
+                    Vector3 p4 = new Vector3(0, height, size);
+                    Vector3 p5 = new Vector3(size, height, size);
+
+                    Vector3 p6 = new Vector3(size, height, 0);
+                    Vector3 p7 = new Vector3(0, height, 0);
+
+                    Vector3 p8 = new Vector3(size / 2, height + (height/4), size / 2);
+
+                    Vector3[] vertices = new Vector3[]
+                    {
+	                // Left
+	                p7, p4, p0, p3,
  
+	                // Front
+	                p4, p5, p1, p0,
+ 
+	                // Back
+	                p6, p7, p3, p2,
+ 
+	                // Right
+	                p5, p6, p2, p1,
+
+                    p7, p4, p8,
+                    p4, p5, p8,
+                    p6, p7, p8,
+                    p5, p6, p8,
+                    };
+
+                    //Vector3 up = Vector3.up;
+                    Vector3 down = Vector3.down;
+                    Vector3 front = Vector3.forward;
+                    Vector3 back = Vector3.back;
+                    Vector3 left = Vector3.left;
+                    Vector3 right = Vector3.right;
+
+                    Vector3[] normales = new Vector3[]
+                    {
+	                // Left
+	                left, left, left, left,
+ 
+	                // Front
+	                front, front, front, front,
+ 
+	                // Back
+	                back, back, back, back,
+ 
+	                // Right
+	                right, right, right, right,
+
+                    left, left, left,
+                    front, front, front,
+                    back, back, back,
+                    right, right, right,
+                    };
+
+                    Vector2 _00 = new Vector2(0f, 0f);
+                    Vector2 _10 = new Vector2(1f, 0f);
+                    Vector2 _01 = new Vector2(0f, 1f);
+                    Vector2 _11 = new Vector2(1f, 1f);
+                    Vector3 _22 = new Vector3(.5f, .5f);
+
+                    Vector2[] uvs = new Vector2[]
+                    {
+ 
+	                // Left
+	                _11, _01, _00, _10,
+                    
+	                // Front
+	                _11, _01, _00, _10,
+ 
+	                // Back
+	                _11, _01, _00, _10,
+ 
+	                // Right
+	                _11, _01, _00, _10,
+
+                    _11, _01, _22,
+                    _11, _01, _22,
+                    _11, _01, _22,
+                    _11, _01, _22,
+                    };
+
+
+                    int[] triangles = new int[]
+                    {
+
+	                // Left
+	                3, 1, 0,
+                    3, 2, 1,
+ 
+	                // Front
+	                7, 5, 4,
+                    7, 6, 5,
+ 
+	                // Back
+	                11, 9, 8,
+                    11, 10, 9,
+ 
+	                // Right
+	                15, 13, 12,
+                    15, 14, 13,
+
+                    16, 17, 18,
+                    19, 20, 21,
+
+                    22, 23, 24,
+                    25, 26, 27,
+                    };
+
+                    Mesh tm = new Mesh {
+                        vertices = vertices,
+                        normals = normales,
+                        triangles = triangles,
+                        uv = uvs
+
+                    }; ;
+
+                    GameObject temp = new GameObject("temp");
+                    temp.transform.parent = streetBuilding.transform;
+
+                    temp.transform.rotation = streetBuilding.transform.rotation;
+
+                    if (leftStreet) {
+                        if (newGen && corner) {
+                            temp.transform.localPosition = new Vector3(offset + (cornerOrEndDecrease / 2), 0, roadOffset);
+                        }
+                        else if (newGen) {
+                            temp.transform.localPosition = new Vector3(offset + cornerOrEndDecrease, 0, roadOffset);
+                        }
+                        else {
+                            temp.transform.localPosition = new Vector3(offset, 0, roadOffset);
+                        }
+                    }
+                    else {
+                        if (newGen && corner) {
+                            temp.transform.localPosition = new Vector3(offset + (cornerOrEndDecrease), 0, (-roadOffset) - size);
+                        }
+                        else if (newGen) {
+                            temp.transform.localPosition = new Vector3(offset + cornerOrEndDecrease, 0, (-roadOffset) - size);
+                        }
+                        else {
+                            temp.transform.localPosition = new Vector3(offset, 0, (-roadOffset) - size);
+                        }
+                    }
+
+                    offset += size +1f;
+                    MeshFilter m = temp.AddComponent<MeshFilter>();
+                    m.mesh = tm;
+                }
+
+                //House
+                else if (heighest < .2f && d > maxBuildingSize/2) {
+                    float size = (d/2.5f);
+                    float height = Random.Range((laserDistance / 2) + heighest, laserDistance + heighest);
+
+
+                    Vector3 p0 = new Vector3(0, 0, size);
+                    Vector3 p1 = new Vector3(size, 0, size);
+
+                    Vector3 p2 = new Vector3(size, 0, 0);
+                    Vector3 p3 = new Vector3(0, 0, 0);
+
+                    Vector3 p4 = new Vector3(0, height/4, size);
+                    Vector3 p5 = new Vector3(size, height/4, size);
+
+                    Vector3 p6 = new Vector3(size, height/4, 0);
+                    Vector3 p7 = new Vector3(0, height/4, 0);
+
+                    Vector3 p8 = new Vector3(size / 2, (height/4) + (height/8), 0);
+                    Vector3 p9 = new Vector3(size / 2, (height/4) + (height/8), size);
+
+
+                    Vector3[] vertices = new Vector3[]
+                    {
+	                    // Left
+	                    p7, p4, p0, p3,
+ 
+	                    // Front
+	                    p4, p5, p1, p0,
+ 
+	                    // Back
+	                    p6, p7, p3, p2,
+ 
+	                    // Right
+	                    p5, p6, p2, p1,
+ 
+	                    // roof Left
+	                    p8, p9, p7, p4,
+
+                        // roof right
+                        p9, p8, p6, p5,
+
+                        p7, p6, p8,
+
+                        p4, p5, p9
+                    };
+
+                    Vector3 up = Vector3.up;
+                    Vector3 down = Vector3.down;
+                    Vector3 front = Vector3.forward;
+                    Vector3 back = Vector3.back;
+                    Vector3 left = Vector3.left;
+                    Vector3 right = Vector3.right;
+
+                    Vector3[] normales = new Vector3[]
+                    {
+	                    // Left
+	                    left, left, left, left,
+ 
+	                    // Front
+	                    front, front, front, front,
+ 
+	                    // Back
+	                    back, back, back, back,
+ 
+	                    // Right
+	                    right, right, right, right,
+ 
+	                    // Roof left
+	                    left, left, left, left,
+
+                        //Roof right
+                        right, right, right, right,
+
+                        back, back, back,
+
+                        front, front, front,
+                    };
+
+                    Vector2 _00 = new Vector2(0f, 0f);
+                    Vector2 _10 = new Vector2(1f, 0f);
+                    Vector2 _01 = new Vector2(0f, 1f);
+                    Vector2 _11 = new Vector2(1f, 1f);
+
+                    Vector2 _22 = new Vector2(1f, .5f);
+
+                    Vector2[] uvs = new Vector2[]
+                    {
+ 
+	                    // Left
+	                    _11, _01, _00, _10,
+ 
+	                    // Front
+	                    _11, _01, _00, _10,
+ 
+	                    // Back
+	                    _11, _01, _00, _10,
+ 
+	                    // Right
+	                    _11, _01, _00, _10,
+ 
+	                    // Roof left
+	                    _11, _01, _00, _10,
+
+                        //Roof right
+                        _11, _01, _00, _10,
+
+                        // punt front
+	                    _11, _10, _22,
+
+                        //punt back
+                        _11, _10, _22,
+                    };
+
+                    int[] triangles = new int[]
+                    {
+	                    // Left
+	                    3, 1, 0,
+                        3, 2, 1,
+ 
+	                    // Front
+	                    7, 5, 4,
+                        7, 6, 5,
+ 
+	                    // Back
+	                    11, 9, 8,
+                        11, 10, 9,
+ 
+	                    // Right
+	                    15, 13, 12,
+                        15, 14, 13,
+
+                        //Roof Left
+                        17, 16, 18,
+                        19, 17, 18,
+
+                        ////Roof right
+                        21, 20, 23,
+                        23, 22, 21,
+
+                        26,25,24,
+                        27,28,29,
+
+                    };
+
+                    Mesh tm = new Mesh {
+                        vertices = vertices,
+                        normals = normales,
+                        triangles = triangles,
+                        uv = uvs
+
+                    }; ;
+                    GameObject temp = new GameObject("temp");
+                    temp.transform.parent = streetBuilding.transform;
+
+                    temp.transform.rotation = streetBuilding.transform.rotation;
+                    if (leftStreet) {
+                        if (newGen && corner) {
+                            temp.transform.localPosition = new Vector3(offset + (cornerOrEndDecrease / 2), 0, roadOffset);
+                        }
+                        else if (newGen) {
+                            temp.transform.localPosition = new Vector3(offset + cornerOrEndDecrease, 0, roadOffset);
+                        }
+                        else {
+                            temp.transform.localPosition = new Vector3(offset, 0, roadOffset);
+                        }
+                    }
+                    else {
+                        if (newGen && corner) {
+                            temp.transform.localPosition = new Vector3(offset + (cornerOrEndDecrease), 0, (-roadOffset) - size);
+                        }
+                        else if (newGen) {
+                            temp.transform.localPosition = new Vector3(offset + cornerOrEndDecrease, 0, (-roadOffset) - size);
+                        }
+                        else {
+                            temp.transform.localPosition = new Vector3(offset, 0, (-roadOffset) - size);
+                        }
+                    }
+
+                    offset += size + 1f;
+                    MeshFilter m = temp.AddComponent<MeshFilter>();
+                    m.mesh = tm;     
+                }
+
+                //Block
+                else if(d > maxBuildingSize/2) {
+                    float size = d;
+                    float height = Random.Range((laserDistance) + heighest, (laserDistance + heighest) * 3);
+
+                    Vector3 p0 = new Vector3(0, 0, size);
+                    Vector3 p1 = new Vector3(size, 0, size);
+
+                    Vector3 p2 = new Vector3(size, 0, 0);
+                    Vector3 p3 = new Vector3(0, 0, 0);
+
+                    Vector3 p4 = new Vector3(0, (height) - size / (height / 5), size);
+
+                    Vector3 p5 = new Vector3(size, (height) - size / (height / 5), size);
+                    Vector3 p6 = new Vector3(size, (height) - size / (height / 5), 0);
+                    Vector3 p7 = new Vector3(0, (height) - size / (height / 5), 0);
+
+
+
+                    Vector3[] vertices = new Vector3[]
+                    {
 	                // Left
 	                p7, p4, p0, p3,
  
@@ -202,20 +552,17 @@ namespace V02 {
  
 	                // Top
 	                p7, p6, p5, p4
-                };
+                    };
 
-                Vector3 up = Vector3.up;
-                Vector3 down = Vector3.down;
-                Vector3 front = Vector3.forward;
-                Vector3 back = Vector3.back;
-                Vector3 left = Vector3.left;
-                Vector3 right = Vector3.right;
+                    Vector3 up = Vector3.up;
+                    Vector3 down = Vector3.down;
+                    Vector3 front = Vector3.forward;
+                    Vector3 back = Vector3.back;
+                    Vector3 left = Vector3.left;
+                    Vector3 right = Vector3.right;
 
-                Vector3[] normales = new Vector3[]
-                {
-	                // Bottom
-	                down, down, down, down,
- 
+                    Vector3[] normales = new Vector3[]
+                    {
 	                // Left
 	                left, left, left, left,
  
@@ -230,17 +577,15 @@ namespace V02 {
  
 	                // Top
 	                up, up, up, up
-                };
+                    };
 
-                Vector2 _00 = new Vector2(0f, 0f);
-                Vector2 _10 = new Vector2(1f, 0f);
-                Vector2 _01 = new Vector2(0f, 1f);
-                Vector2 _11 = new Vector2(1f, 1f);
+                    Vector2 _00 = new Vector2(0f, 0f);
+                    Vector2 _10 = new Vector2(1f, 0f);
+                    Vector2 _01 = new Vector2(0f, 1f);
+                    Vector2 _11 = new Vector2(1f, 1f);
 
-                Vector2[] uvs = new Vector2[]
-                {
-	                // Bottom
-	                _11, _01, _00, _10,
+                    Vector2[] uvs = new Vector2[]
+                    {
  
 	                // Left
 	                _11, _01, _00, _10,
@@ -256,72 +601,70 @@ namespace V02 {
  
 	                // Top
 	                _11, _01, _00, _10,
-                };
+                    };
 
-                int[] triangles = new int[]
-                {
-	                // Bottom
-	                3, 1, 0,
-                    3, 2, 1,			
- 
+                    int[] triangles = new int[]
+                    {
 	                // Left
+	                3 + 4 * 0, 1 + 4 * 0, 0 + 4 * 0,
+                    3 + 4 * 0, 2 + 4 * 0, 1 + 4 * 0,
+ 
+	                // Front
 	                3 + 4 * 1, 1 + 4 * 1, 0 + 4 * 1,
                     3 + 4 * 1, 2 + 4 * 1, 1 + 4 * 1,
  
-	                // Front
+	                // Back
 	                3 + 4 * 2, 1 + 4 * 2, 0 + 4 * 2,
                     3 + 4 * 2, 2 + 4 * 2, 1 + 4 * 2,
  
-	                // Back
+	                // Right
 	                3 + 4 * 3, 1 + 4 * 3, 0 + 4 * 3,
                     3 + 4 * 3, 2 + 4 * 3, 1 + 4 * 3,
  
-	                // Right
+	                // Top
 	                3 + 4 * 4, 1 + 4 * 4, 0 + 4 * 4,
                     3 + 4 * 4, 2 + 4 * 4, 1 + 4 * 4,
- 
-	                // Top
-	                3 + 4 * 5, 1 + 4 * 5, 0 + 4 * 5,
-                    3 + 4 * 5, 2 + 4 * 5, 1 + 4 * 5,
-                };
+                    };
 
-                Mesh tm = new Mesh {
-                    vertices = vertices,
-                    normals = normales,
-                    triangles = triangles,
-                    uv = uvs
+                    Mesh tm = new Mesh {
+                        vertices = vertices,
+                        normals = normales,
+                        triangles = triangles,
+                        uv = uvs
 
-                }; ;
-                GameObject temp = new GameObject("temp");
-                temp.transform.parent = streetBuilding.transform;
+                    }; ;
+                    GameObject temp = new GameObject("temp");
+                    temp.transform.parent = streetBuilding.transform;
 
-                temp.transform.rotation = streetBuilding.transform.rotation;
-                if (leftStreet) {
-                    if(newGen && corner){
-                        temp.transform.localPosition = new Vector3(offset + (cornerOrEndDecrease/2), 0, roadOffset);
-                    }
-                    else if (newGen) {
-                        temp.transform.localPosition = new Vector3(offset + cornerOrEndDecrease, 0, roadOffset);
-                    }
-                    else{
-                        temp.transform.localPosition = new Vector3(offset, 0, roadOffset);
-                    }                  
-                }
-                else {
-                    if (newGen && corner) {
-                        temp.transform.localPosition = new Vector3(offset + (cornerOrEndDecrease), 0, (-roadOffset) - size);
-                    }
-                    else if (newGen) {
-                        temp.transform.localPosition = new Vector3(offset + cornerOrEndDecrease, 0, (-roadOffset) - size);
+                    temp.transform.rotation = streetBuilding.transform.rotation;
+                    if (leftStreet) {
+                        if (newGen && corner) {
+                            temp.transform.localPosition = new Vector3(offset + (cornerOrEndDecrease / 2), 0, roadOffset);
+                        }
+                        else if (newGen) {
+                            temp.transform.localPosition = new Vector3(offset + cornerOrEndDecrease, 0, roadOffset);
+                        }
+                        else {
+                            temp.transform.localPosition = new Vector3(offset, 0, roadOffset);
+                        }
                     }
                     else {
-                        temp.transform.localPosition = new Vector3(offset, 0, (-roadOffset) - size);
+                        if (newGen && corner) {
+                            temp.transform.localPosition = new Vector3(offset + (cornerOrEndDecrease), 0, (-roadOffset) - size);
+                        }
+                        else if (newGen) {
+                            temp.transform.localPosition = new Vector3(offset + cornerOrEndDecrease, 0, (-roadOffset) - size);
+                        }
+                        else {
+                            temp.transform.localPosition = new Vector3(offset, 0, (-roadOffset) - size);
+                        }
                     }
-                }      
-                
-                offset += size;
-                MeshFilter m = temp.AddComponent<MeshFilter>();
-                m.mesh = tm;
+
+                    offset += size + 1f;
+                    MeshFilter m = temp.AddComponent<MeshFilter>();
+
+                    m.mesh = tm;
+                }
             }
         }
 
@@ -363,9 +706,8 @@ namespace V02 {
         void SingleMesh(GameObject building) {
             MeshFilter[] meshFilters = building.GetComponentsInChildren<MeshFilter>();
 
-            building.AddComponent<MeshFilter>();
-            building.AddComponent<MeshRenderer>();
-            building.GetComponent<MeshRenderer>().material = buildingMaterial;
+            Building b = building.AddComponent<Building>();
+            b.meshRenderer.material = buildingMaterial;
 
             CombineInstance[] combine = new CombineInstance[meshFilters.Length];
             Matrix4x4 pTransform = building.transform.worldToLocalMatrix;
@@ -376,14 +718,14 @@ namespace V02 {
                 meshFilters[i].gameObject.SetActive(false);
                 i++;
             }
-            building.GetComponent<MeshFilter>().mesh = new Mesh();
-            building.GetComponent<MeshFilter>().mesh.CombineMeshes(combine, true, true);
+            b.meshFilter.mesh = new Mesh();
+            b.meshFilter.mesh.CombineMeshes(combine, true, true);
 
             for (int x = meshFilters.Length - 1; x >= 0; x--) {
                 Destroy(meshFilters[x].gameObject);
             }
-
-            building.gameObject.SetActive(true);
+            b.gameObject.SetActive(true);
+            b.meshCollider.sharedMesh = b.meshFilter.mesh;
         }
 
         public void NewStreet() {

@@ -26,6 +26,9 @@ namespace V02 {
         //Get all settings from settingsObject
         override public void InitSettings() {
             settings = SettingsObject.Instance;
+            if (!settings.mainRoadGenerators.Contains(this)) {
+                settings.mainRoadGenerators.Add(this);
+            }
             noise = settings.MR_noise;
             roadCrossingSnapDistance = settings.MR_roadCrossingSnapDistance;
             angle = settings.MR_angle;
@@ -37,7 +40,6 @@ namespace V02 {
             branchProb = settings.MR_branchProbability;
             maxLenght = settings.MR_MaxRoadLength;
             roadColor = settings.MR_roadColor;
-
         }
 
         //Create new highway
@@ -65,7 +67,7 @@ namespace V02 {
         }
 
         protected override void Update() {
-            if (Input.anyKey) {
+            if (curLenght < maxLenght) {
                 if (this.transform.position.x > 0 && this.transform.position.x < settings.populationMap.width && this.transform.position.z > 0 && this.transform.position.z < settings.populationMap.height && curLenght < length) {
                     if(settings.R_minimalBranchDistance < curStreetBranchDistance) {
                         NewStreet();
@@ -74,20 +76,22 @@ namespace V02 {
                     else {
                         curStreetBranchDistance++;
                     }
-                    BuildFreeway();
+                    BuildNewRoad();
                     curLenght++;
                 }
                 else {
                     DestroyGenerator();
                 }
             }
+            else {
+                DestroyGenerator();
+            }
         }
 
-        //Start loop for highway creation
-        void BuildFreeway() {
-            if(curLenght < length) {
+        void BuildNewRoad() {
+            if (curLenght < length) {
                 GetBestPosition(); //<- Calls Constraints and BuildRoad();
-                DrawNewRoad("MainRoad",2.5f,0);
+                DrawNewRoad("MainRoad", 2.5f, 0);
             }
             else {
                 DestroyGenerator();
@@ -146,7 +150,6 @@ namespace V02 {
                         //if there is a occupied possition found within range of our current position of X and Z
                         if (this.transform.position.x < q.x + (settings.highwayClearance) && this.transform.position.x > q.x - (settings.highwayClearance)) {
                             if (this.transform.position.z < q.y + (settings.highwayClearance) && this.transform.position.z > q.y - (settings.highwayClearance)) {
-                                print("To Close to highway");
                                 return;
                             }
                         }
@@ -170,6 +173,11 @@ namespace V02 {
                 Instantiate(roadBranch, this.transform.position, this.transform.rotation, null);
             }
             this.transform.eulerAngles = x;
+        }
+
+        protected override void DestroyGenerator() {
+            settings.mainRoadGenerators.Remove(this);
+            base.DestroyGenerator();
         }
     }
 }

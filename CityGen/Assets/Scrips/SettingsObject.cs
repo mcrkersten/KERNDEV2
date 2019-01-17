@@ -1,7 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor;
 using System.Linq;
+using System.IO;
+using System.Text;
 
 namespace V02 {
     public class SettingsObject : MonoBehaviour {
@@ -82,7 +85,7 @@ namespace V02 {
 
         //UNTIL
         ///////////////////////////////////////////////////////////////////////////////
-        [SerializeField]
+        private bool systemIsRunning = false;
         public List<Quad> quads;
         public List<Vector2> occupiedXY;
         public List<Vector2> existingCrossing;
@@ -91,32 +94,45 @@ namespace V02 {
         public List<GameObject> roads = new List<GameObject>();
         public List<GameObject> newRoads = new List<GameObject>();
         public List<GameObject> removeRoads = new List<GameObject>();
+        public int buildingAge;
 
-        public void Awake() {
+        //GENERATORS
+        ///////////////////////////////////////////////////////////////////////////////
+        public List<HighwayGeneratorV02> highwayGenerators = new List<HighwayGeneratorV02>();
+        public List<MainRoadGeneratorV01> mainRoadGenerators = new List<MainRoadGeneratorV01>();
+        public List<StreetGeneratorV01> streetGenerator = new List<StreetGeneratorV01>();
+
+        //EDITOR
+        ///////////////////////////////////////////////////////////////////////////////
+        public bool editorStart = false;
+        public bool editorEnd = false;
+        public Camera camera;
+
+        private void Awake() {
+            editorStart = true;
             InitQuads();
         }
 
-        public void Update() {
-            if (Input.GetKeyDown(KeyCode.Space)) {
+        private void Update() {
+            if (mainRoadGenerators.Count == 0 && highwayGenerators.Count == 0 && !systemIsRunning) {
+                systemIsRunning = true;
                 StartCoroutine(AntiRaceCondition());
             }
         }
 
-        IEnumerator AntiRaceCondition() {
-            for(int i = 0; i < roads.Count; i++) {
+        private IEnumerator AntiRaceCondition() {
+            for (int i = 0; i < roads.Count; i++) {
                 roads[i].GetComponent<StreetGeneratorV01>().BuildLoop();
-                if(i != roads.Count - 1) {
+                if (i != roads.Count - 1) {
                     i++;
-                    //Normallu this would be the other side, so no conflicts should happen
-                    //TO DO: check if correct
                     roads[i].GetComponent<StreetGeneratorV01>().BuildLoop();
-                }             
+                }
                 yield return null;
             }
             NextRound();
         }
 
-        void NextRound() {
+        private void NextRound() {
             foreach (GameObject i in removeRoads) {
                 roads.Remove(i);
                 Destroy(i);
@@ -127,9 +143,15 @@ namespace V02 {
             if (roads.Count != 0) {
                 StartCoroutine(AntiRaceCondition());
             }
+            else {
+                editorEnd = true;
+                editorStart = false;
+                print("Done");
+                UnityEditor.EditorApplication.isPaused = true;
+            }
         }
 
-        void InitQuads() {
+        private void InitQuads() {
             GameObject quadParent = new GameObject("Quads");
             quadParent.transform.position = new Vector3(0, 0, 0);
 
@@ -139,9 +161,9 @@ namespace V02 {
             int w = width;
             int h = height;
 
-            for(int i = 0; i < 20; i++) {            
+            for (int i = 0; i < 20; i++) {
                 CreateQuad(w, h, quadParent);
-                for(int x = 0; x < 19; x++) {
+                for (int x = 0; x < 19; x++) {
                     w = w + width;
                     CreateQuad(w, h, quadParent);
                 }
@@ -150,7 +172,7 @@ namespace V02 {
             }
         }
 
-        void CreateQuad(int w, int h, GameObject parent) {
+        private void CreateQuad(int w, int h, GameObject parent) {
             GameObject q = new GameObject("Quad" + w + " " + h);
             q.transform.parent = parent.transform;
             q.transform.position = new Vector3(w, 0, h);

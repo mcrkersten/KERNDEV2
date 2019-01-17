@@ -10,8 +10,7 @@ namespace V02 {
         private int branchDistanceMR;
         private bool canBranch;
         private int curStreetBranchDistance;
-
-        // Use this for initialization
+        
         protected override void Start() {
             InitSettings();
             InitLaserPosition();
@@ -23,6 +22,10 @@ namespace V02 {
         //Get all settings from settingsObject
         override public void InitSettings()  {
             settings = SettingsObject.Instance;
+
+            if (!settings.highwayGenerators.Contains(this)) {
+                settings.highwayGenerators.Add(this);
+            }          
             noise = settings.H_noise;
             roadCrossingSnapDistance = settings.H_roadCrossingSnapDistance;
             angle = settings.H_angle;
@@ -61,20 +64,19 @@ namespace V02 {
         }
 
         protected override void Update() {
-            if (Input.anyKey) {
+            if (curLenght < maxLenght) {
                 if (this.transform.position.x > 0 && this.transform.position.x < settings.populationMap.width && this.transform.position.z > 0 && this.transform.position.z < settings.populationMap.height) {
-                    BuildFreeway();
+                    GetBestPosition(); //<- Calls Constraints and BuildRoad();
+                    DrawNewRoad("HighWay", 5, 1);
+                    curLenght++;
+                }
+                else {
+                    DestroyGenerator();
                 }
             }
-        }
-
-        //Start loop for highway creation
-        void BuildFreeway() {
-            if(curLenght < maxLenght) {
-                curLenght++;
-                GetBestPosition(); //<- Calls Constraints and BuildRoad();
-                DrawNewRoad("HighWay", 5, 1);
-            }
+            else {
+                DestroyGenerator();
+            }     
         }
 
         //Place new point if all tests are correct or disable this object
@@ -133,6 +135,11 @@ namespace V02 {
                 branch.GetComponent<MainRoadGeneratorV01>().InitBranch(this.transform.eulerAngles, this.transform.position);
                 branchDistanceMR = 0;
             }
+        }
+
+        protected override void DestroyGenerator() {
+            settings.highwayGenerators.Remove(this);
+            base.DestroyGenerator();
         }
     }
 }

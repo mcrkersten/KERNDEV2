@@ -1,0 +1,108 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &100100000
+Prefab:
+  m_ObjectHideFlags: 1
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications: []
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 0}
+  m_RootGameObject: {fileID: 1534172222337100}
+  m_IsPrefabAsset: 1
+--- !u!1 &1534172222337100
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4594734663265150}
+  - component: {fileID: 114000250909182518}
+  m_Layer: 0
+  m_Name: Setings
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!4 &4594734663265150
+Transform:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1534172222337100}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &114000250909182518
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1534172222337100}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4585296819679e845ba57d93a80b911e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  populationMap: {fileID: 2800000, guid: 66eaa755e96349b429d08a858b213fce, type: 3}
+  waterMap: {fileID: 2800000, guid: c3ddf68b87d189a4ab487bfa41f7b9b8, type: 3}
+  H_roadCrossingSnapDistance: 1.5
+  H_noise: 2
+  H_angle: 10
+  H_roadLength: 150
+  H_laserDistance: 15
+  H_canBranch: 1
+  H_roadColor: {r: 0.33962262, g: 0.33962262, b: 0.33962262, a: 1}
+  H_branchProbability: 54
+  H_branchAngle: 90
+  H_minimalBranchDistance: 15
+  maxHighways: 8
+  currentHighways: 2
+  MR_roadCrossingSnapDistance: 1.5
+  MR_noise: 7
+  MR_angle: 10
+  MR_MaxRoadLength: 50
+  MR_MinRoadLength: 25
+  MR_laserDistance: 5
+  MR_canBranch: 1
+  MR_roadColor: {r: 0.38679248, g: 0.38679248, b: 0.38679248, a: 1}
+  MR_branchProbability: 65
+  MR_branchAngle: 90
+  MR_minimalBranchDistance: 10
+  maxMainRoads: 50
+  currentMainRoads: 0
+  R_roadCrossingSnapDistance: 1.5
+  highwayClearance: 20
+  R_noise: 10
+  R_angle: 4
+  R_minAngle: 85
+  R_maxAngle: 95
+  R_minPopulation: 0.6
+  R_laserDistance: 5
+  R_minimalBranchDistance: 2
+  R_branchProbability: 70
+  R_roadColor: {r: 0.3301887, g: 0.3301887, b: 0.3301887, a: 1}
+  maxGeneratedStreets: 7
+  quads: []
+  occupiedXY: []
+  existingCrossing: []
+  existingCrossingYrot: []
+  roads: []
+  newRoads: []
+  removeRoads: []
+  buildingAge: 2502
+  highwayGenerators:
+  - {fileID: 0}
+  - {fileID: 0}
+  mainRoadGenerators: []
+  streetGenerator: []
+  editorStart: 0
+  editorEnd: 0
+  camera: {fileID: 0}
