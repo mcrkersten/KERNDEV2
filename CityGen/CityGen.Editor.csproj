@@ -342,10 +342,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="CityGen.Plugins.csproj">
-      <Project>{B0E35B09-7F81-5CCF-BFDA-5AA690770FB8}</Project>
-      <Name>CityGen.Plugins</Name>
-    </ProjectReference>
     <ProjectReference Include="CityGen.csproj">
       <Project>{8B14B701-D458-A020-413E-4D250CE4E8E6}</Project>
       <Name>CityGen</Name>
@@ -405,7 +401,6 @@
     <Compile Include="Assets\PostProcessing\Editor\Utils\ReflectionUtils.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Assets\GhostFreeRoamCamera\READEME.txt" />
     <None Include="Assets\PostProcessing\Editor Resources\Monitors\HistogramCompute.compute" />
     <None Include="Assets\PostProcessing\Editor Resources\Monitors\HistogramRender.shader" />
     <None Include="Assets\PostProcessing\Editor Resources\Monitors\ParadeRender.shader" />
@@ -447,10 +442,6 @@
     <None Include="Assets\PostProcessing\Resources\Shaders\Uber.shader" />
     <None Include="Assets\PostProcessing\Resources\Shaders\UberSecondPass.cginc" />
     <None Include="Assets\PostProcessing\Utilities\CustomMotionTexture\Shaders\CustomMotionVectorTexture.shader" />
-    <None Include="Assets\SimpleCloudSystem by RM\Read Me.txt" />
-    <None Include="Assets\SimpleCloudSystem by RM\SCS Instructions.txt" />
-    <None Include="Assets\Standard Assets\Effects\ImageEffects\Shaders\Tonemapper.shader" />
-    <None Include="Assets\StarSystem\SpriteShader.shader" />
     <None Include="Packages\com.unity.package-manager-ui\Editor\Resources\Styles\Main_Dark.uss" />
     <None Include="Packages\com.unity.package-manager-ui\Editor\Resources\Styles\Main_Light.uss" />
     <None Include="Packages\com.unity.package-manager-ui\Editor\Resources\Templates\Alert.uxml" />
