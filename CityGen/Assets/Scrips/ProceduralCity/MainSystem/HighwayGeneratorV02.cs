@@ -20,7 +20,7 @@ namespace V02 {
         }
 
         //Get all settings from settingsObject
-        override public void InitSettings()  {
+        override protected void InitSettings()  {
             settings = SettingsObject.Instance;
 
             if (!settings.highwayGenerators.Contains(this)) {
@@ -39,7 +39,7 @@ namespace V02 {
             roadColor = settings.H_roadColor;
         }
 
-        //Create new highway
+        //Create new highwayGenertator
         public void InitBranch(Vector3 rot, Vector3 pos) {
             LateStart();
             this.transform.position = pos;
@@ -128,6 +128,7 @@ namespace V02 {
             }
         }
 
+        //Creates new MainRoad
         public void NewMainRoad() {
             int spawnNumber = Random.Range(0, 100 + 1);
             if (branchDistanceMR > (settings.MR_minimalBranchDistance) && spawnNumber < settings.MR_branchProbability) {
@@ -137,6 +138,7 @@ namespace V02 {
             }
         }
 
+        //Sets generator to be removed in the SettingsObject
         protected override void DestroyGenerator() {
             settings.highwayGenerators.Remove(this);
             base.DestroyGenerator();

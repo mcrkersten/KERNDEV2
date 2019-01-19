@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace V02 {
+    //Used for debug
     public class SourceImage : MonoBehaviour {
 
         private Texture2D image;

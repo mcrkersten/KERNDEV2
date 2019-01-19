@@ -16,8 +16,6 @@ namespace V02 {
         private float pointTowerThreshhold;
         private bool buildBuildings;
         private List<LineRenderer> madeRoads = new List<LineRenderer>();
-
-
         private float maxBuildingSize;
         private float minBuildingSize; 
 
@@ -28,7 +26,8 @@ namespace V02 {
             debugPos = this.gameObject.transform.position;
         }
 
-        override public void InitSettings() {
+        //Get all settings from settingsObject
+        override protected void InitSettings() {
             settings = SettingsObject.Instance;
             settings.newRoads.Add(this.gameObject);
             noise = settings.R_noise;
@@ -51,6 +50,7 @@ namespace V02 {
             minBuildingSize = laserDistance / 2;
         }
 
+        //Function is used by SettingsObject. Used to counter Race Conditions
         public void BuildLoop () {
             if (this.transform.position.x > 0 && this.transform.position.x < settings.populationMap.width && this.transform.position.z > 0 && this.transform.position.z < settings.populationMap.height) {
                 GetBestPosition();
@@ -64,6 +64,7 @@ namespace V02 {
             }
         }
 
+        //Can now Destroy via this function
         protected override Vector3 PopulationConstraints(List<int> x, List<int> z, List<float> y) {
             heighest = 1;
             Vector3 heighestPopPos = new Vector3();
@@ -133,6 +134,7 @@ namespace V02 {
             }
         }
 
+        //Generates base GameObject for building Meshes
         void BuildBuildings(Vector3 start, Vector3 end, bool newGen, bool corner) {
             GameObject building = new GameObject("building");
             building.transform.position = new Vector3(start.x, 0, start.z);
@@ -145,6 +147,7 @@ namespace V02 {
             SingleMesh(building);
         }
 
+        //Generates building meshes
         void GenerateBuildingMesh(GameObject streetBuilding, Vector3 start, Vector3 end, bool leftStreet, bool newGen, bool corner) {
             float offset = 0;
             float roadOffset = 1.5f;
@@ -671,6 +674,7 @@ namespace V02 {
             }
         }
 
+        //Can now detect if is a new generator or new generator has been build by this Generator
         protected override Vector2 RoadCrossing(Vector3 position) {
             List<Vector2> possibleCrossings = new List<Vector2>();
             if (curLenght >= 1) {
@@ -706,6 +710,7 @@ namespace V02 {
             return new Vector2(0, 0);
         }
 
+        //Puts all generated meshes on to one mesh and puts them in the parent meshFilter
         void SingleMesh(GameObject building) {
             MeshFilter[] meshFilters = building.GetComponentsInChildren<MeshFilter>();
 
@@ -731,6 +736,7 @@ namespace V02 {
             b.meshCollider.sharedMesh = b.meshFilter.mesh;
         }
 
+        //Makes new StreetGenerators
         public void NewStreet() {
             Vector3 x = this.transform.eulerAngles;
 
@@ -764,6 +770,7 @@ namespace V02 {
             this.transform.eulerAngles = x;
         }
 
+        //Sets generator to be removed in the SettingsObject
         protected override void DestroyGenerator() {
             settings.removeRoads.Add(this.gameObject);
         }

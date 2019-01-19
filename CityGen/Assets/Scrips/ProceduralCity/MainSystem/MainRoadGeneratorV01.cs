@@ -24,7 +24,7 @@ namespace V02 {
         }
 
         //Get all settings from settingsObject
-        override public void InitSettings() {
+        override protected void InitSettings() {
             settings = SettingsObject.Instance;
             if (!settings.mainRoadGenerators.Contains(this)) {
                 settings.mainRoadGenerators.Add(this);
@@ -42,7 +42,7 @@ namespace V02 {
             roadColor = settings.MR_roadColor;
         }
 
-        //Create new highway
+        //Create new highwayGenerator
         public void InitBranch(Vector3 rot, Vector3 pos) {
             LateStart();
             this.transform.position = pos;
@@ -66,6 +66,7 @@ namespace V02 {
             this.transform.eulerAngles = new Vector3(rot.x, bestOnPopMap.y, rot.z);
         }
 
+
         protected override void Update() {
             if (curLenght < maxLenght) {
                 if (this.transform.position.x > 0 && this.transform.position.x < settings.populationMap.width && this.transform.position.z > 0 && this.transform.position.z < settings.populationMap.height && curLenght < length) {
@@ -88,7 +89,8 @@ namespace V02 {
             }
         }
 
-        void BuildNewRoad() {
+        //Creates new MainRoad
+        private void BuildNewRoad() {
             if (curLenght < length) {
                 GetBestPosition(); //<- Calls Constraints and BuildRoad();
                 DrawNewRoad("MainRoad", 2.5f, 0);
@@ -175,6 +177,7 @@ namespace V02 {
             this.transform.eulerAngles = x;
         }
 
+        //Sets generator to be removed in the SettingsObject
         protected override void DestroyGenerator() {
             settings.mainRoadGenerators.Remove(this);
             base.DestroyGenerator();

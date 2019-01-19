@@ -33,6 +33,7 @@ namespace V02 {
             InitLineRenderer();
         }
 
+        //If initialization needs to happen again
         protected void LateStart() {
             InitSettings();
             InitLaserPosition();
@@ -40,12 +41,14 @@ namespace V02 {
             debugPos = this.gameObject.transform.position;
         }
 
-        public virtual void InitSettings() {
+        //Get's settings from settingsObject
+        protected virtual void InitSettings() {
             settings = SettingsObject.Instance;
             populationMap = settings.populationMap;
             waterMap = settings.waterMap;
         }
 
+        //Initializes the debugLineRenderer
         protected void InitLineRenderer() {
             lr = this.GetComponent<LineRenderer>();
             lr.positionCount = 2;
@@ -53,6 +56,7 @@ namespace V02 {
             lr.SetPosition(1, laserPos.transform.position);
         }
 
+        //Sets the laserObject on correct position
         protected void InitLaserPosition() {
             laserPos = new GameObject("laser");
             laserPos.transform.parent = this.transform;
@@ -60,8 +64,11 @@ namespace V02 {
             laserPos.transform.rotation = this.transform.rotation;
         }
 
+        //Empty
         protected virtual void Update() { }
 
+
+        //Gets position values and puts them in to local list and sends the list to PopulationConstraints
         protected virtual void GetBestPosition() {
             List<int> x = new List<int>(); //Position
             List<int> z = new List<int>(); //Position
@@ -84,6 +91,8 @@ namespace V02 {
             BuildRoad(waterConstraints, bestOnPopMap);
         }
 
+
+        //Tests the list on the population map via Getpixel
         protected virtual Vector3 PopulationConstraints(List<int> x, List<int> z, List<float> y) {
             float heighest = 1;
             Vector3 heighestPopPos = laserPos.transform.position;
@@ -97,6 +106,7 @@ namespace V02 {
             return heighestPopPos;
         }
 
+        //Tests the chosen pixel position on the waterMap.
         protected bool WaterConstraints(int x, int z) {
             float waterAmount = waterMap.GetPixel(x, z).grayscale;
             if (waterAmount < 1) {
@@ -105,6 +115,7 @@ namespace V02 {
             return true;
         }
 
+        //Draws new road and turns it in to a mesh
         protected virtual void DrawNewRoad(string name, float size, int sortOrder) {
             GameObject newLine = new GameObject(name);
 
@@ -136,6 +147,7 @@ namespace V02 {
             Destroy(nlr);
         }
 
+        //Tests if position is posible with other roads
         protected virtual Vector2 RoadCrossing(Vector3 position) {
             List<Vector2> possibleCrossings = new List<Vector2>();
 

@@ -29,6 +29,7 @@ namespace V02 {
             meshCollider.isTrigger = true;
         }
 
+        //If trigger by older building, destroy self
         private void OnTriggerEnter(Collider other) {
             if(other.gameObject.GetComponent<Building>() != null) {
                 if (other.gameObject.GetComponent<Building>().age < age) {
